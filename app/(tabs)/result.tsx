@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Share, Image, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Share, Image, ScrollView, RefreshControl, ActivityIndicator, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { BannerAd } from '@/components/BannerAd';
 import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoreHorizontal } from 'lucide-react-native';
 import { openaiService, ResponseType } from '@/services/openai';
@@ -349,7 +349,21 @@ export default function ResultTab() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
-            style={[styles.headerBackButton, { backgroundColor: colors.surface }]}
+            style={[styles.headerBackButton, { backgroundColor: colors.surface, ...Platform.select({
+              web: {
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+              },
+              default: {
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 2,
+              },
+            }) }]}
             onPress={() => router.back()}
           >
             <ArrowLeft size={24} color={colors.text} />
@@ -374,7 +388,21 @@ export default function ResultTab() {
             {originalText && (
               <View style={styles.originalTextContainer}>
                 <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>Original Chat</Text>
-                <View style={[styles.originalTextCard, { backgroundColor: colors.cardBackground }]}>
+                <View style={[styles.originalTextCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+                  web: {
+                    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+                  },
+                  default: {
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 4,
+                  },
+                }) }]}>
                   <Text style={[styles.originalText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>{originalText}</Text>
                 </View>
               </View>
@@ -391,7 +419,21 @@ export default function ResultTab() {
                 </View>
               </View>
 
-              <View style={[styles.responseCard, { backgroundColor: colors.cardBackground }]}>
+              <View style={[styles.responseCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+                web: {
+                  boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+                },
+                default: {
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 12,
+                  elevation: 8,
+                },
+              }) }]}>
                 <Text style={[styles.responseText, { color: colors.text, fontFamily: 'ProximaNova-Regular' }]}>{response}</Text>
                 <View style={styles.languageIndicator}>
                   <Text style={[styles.languageText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>
@@ -404,7 +446,21 @@ export default function ResultTab() {
             {/* Action Buttons */}
             <View style={styles.actionButtons}>
               <TouchableOpacity
-                style={[styles.actionButton, { backgroundColor: colors.cardBackground }]}
+                style={[styles.actionButton, { backgroundColor: colors.cardBackground, ...Platform.select({
+                  web: {
+                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                  },
+                  default: {
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
+                  },
+                }) }]}
                 onPress={copyToClipboard}
               >
                 <Copy size={20} color="#FF6B7A" />
@@ -412,7 +468,21 @@ export default function ResultTab() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.actionButton, { backgroundColor: colors.cardBackground }]}
+                style={[styles.actionButton, { backgroundColor: colors.cardBackground, ...Platform.select({
+                  web: {
+                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                  },
+                  default: {
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
+                  },
+                }) }]}
                 onPress={shareResponse}
               >
                 <Share2 size={20} color="#9B59B6" />
@@ -452,7 +522,21 @@ export default function ResultTab() {
           ) : history.length > 0 ? (
             <>
               {history.map((item) => (
-                <View key={item.id} style={[styles.historyItem, { backgroundColor: colors.cardBackground }]}>
+                <View key={item.id} style={[styles.historyItem, { backgroundColor: colors.cardBackground, ...Platform.select({
+                  web: {
+                    boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+                  },
+                  default: {
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 1,
+                    },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 2,
+                    elevation: 1,
+                  },
+                }) }]}>
                   <TouchableOpacity
                     style={styles.historyContent}
                     onPress={() => loadHistoryItem(item)}
@@ -485,7 +569,21 @@ export default function ResultTab() {
               {/* Load More Button */}
               {hasMoreHistory && (
                 <TouchableOpacity
-                  style={[styles.loadMoreButton, { backgroundColor: colors.cardBackground }]}
+                  style={[styles.loadMoreButton, { backgroundColor: colors.cardBackground, ...Platform.select({
+                    web: {
+                      boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+                    },
+                    default: {
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.05,
+                      shadowRadius: 2,
+                      elevation: 1,
+                    },
+                  }) }]}
                   onPress={loadMoreHistory}
                   disabled={loadingMore}
                 >
@@ -515,7 +613,21 @@ export default function ResultTab() {
 
         {/* New Response Button */}
         <TouchableOpacity
-          style={styles.newResponseButton}
+          style={[styles.newResponseButton, Platform.select({
+            web: {
+              boxShadow: '0px 4px 8px rgba(155, 89, 182, 0.3)',
+            },
+            default: {
+              shadowColor: '#9B59B6',
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 4,
+            },
+          })]}
           onPress={() => router.push('/(tabs)')}
         >
           <Text style={[styles.newResponseButtonText, { fontFamily: 'ProximaNova-SemiBold' }]}>Create New Response</Text>
@@ -569,14 +681,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   headerTitle: {
     flexDirection: 'row',
@@ -633,14 +737,6 @@ const styles = StyleSheet.create({
   originalTextCard: {
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   originalText: {
     fontSize: 14,
@@ -669,14 +765,6 @@ const styles = StyleSheet.create({
   responseCard: {
     borderRadius: 20,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
     borderLeftWidth: 4,
     borderLeftColor: '#FF6B7A',
   },
@@ -704,14 +792,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   regenerateButton: {
     backgroundColor: '#FF6B7A',
@@ -746,14 +826,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   historyContent: {
     flex: 1,
@@ -802,14 +874,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 16,
     marginTop: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   loadMoreText: {
     fontSize: 14,
@@ -833,14 +897,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#9B59B6',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
   },
   newResponseButtonText: {
     color: 'white',

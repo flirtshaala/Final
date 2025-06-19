@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, Platform, ScrollView, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { BannerAd } from '@/components/BannerAd';
 import { Camera, Image as ImageIcon, Upload, X } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
@@ -297,7 +297,21 @@ export default function ScreenshotTab() {
 
         {/* Sign In Prompt for Non-Authenticated Users */}
         {!user && (
-          <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#9B59B6' }]}>
+          <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#9B59B6', ...Platform.select({
+            web: {
+              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+            },
+            default: {
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
+            },
+          }) }]}>
             <Text style={[styles.signInPromptTitle, { color: colors.text }]}>Sign In Required</Text>
             <Text style={[styles.signInPromptText, { color: colors.textSecondary }]}>
               Please sign in to use screenshot analysis and generate AI responses
@@ -313,7 +327,21 @@ export default function ScreenshotTab() {
 
         {/* Today's Usage - Only for authenticated users */}
         {user && !isPremium && (
-          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+            web: {
+              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+            },
+            default: {
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
+            },
+          }) }]}>
             <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Today's Usage</Text>
             <View style={styles.usageStats}>
               <View style={styles.usageStat}>
@@ -340,7 +368,21 @@ export default function ScreenshotTab() {
 
         {/* Premium Usage Stats */}
         {user && isPremium && (
-          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+            web: {
+              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+            },
+            default: {
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
+            },
+          }) }]}>
             <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Premium Usage Today</Text>
             <View style={styles.usageStats}>
               <View style={styles.usageStat}>
@@ -365,7 +407,21 @@ export default function ScreenshotTab() {
                 <View style={styles.imagePreviewHeader}>
                   <Text style={[styles.imagePreviewTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Selected Screenshot</Text>
                   <TouchableOpacity
-                    style={[styles.removeImageButton, { backgroundColor: colors.surfaceSecondary }]}
+                    style={[styles.removeImageButton, { backgroundColor: colors.surfaceSecondary, ...Platform.select({
+                      web: {
+                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                      },
+                      default: {
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 2,
+                      },
+                    }) }]}
                     onPress={removeImage}
                   >
                     <X size={20} color={colors.text} />
@@ -382,7 +438,21 @@ export default function ScreenshotTab() {
                     source={{ uri: selectedImage }} 
                     style={[
                       styles.selectedImage,
-                      { backgroundColor: colors.surfaceSecondary }
+                      { backgroundColor: colors.surfaceSecondary, ...Platform.select({
+                        web: {
+                          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+                        },
+                        default: {
+                          shadowColor: '#000',
+                          shadowOffset: {
+                            width: 0,
+                            height: 4,
+                          },
+                          shadowOpacity: 0.15,
+                          shadowRadius: 12,
+                          elevation: 8,
+                        },
+                      }) }
                     ]}
                     resizeMode="contain"
                     onError={(error) => {
@@ -395,7 +465,21 @@ export default function ScreenshotTab() {
                 
                 <View style={styles.imageActions}>
                   <TouchableOpacity
-                    style={[styles.changeImageButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+                    style={[styles.changeImageButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, ...Platform.select({
+                      web: {
+                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+                      },
+                      default: {
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 2,
+                        },
+                        shadowOpacity: 0.05,
+                        shadowRadius: 4,
+                        elevation: 2,
+                      },
+                    }) }]}
                     onPress={pickImage}
                   >
                     <Upload size={16} color={colors.text} />
@@ -406,7 +490,21 @@ export default function ScreenshotTab() {
             ) : (
               <View style={styles.uploadOptions}>
                 <TouchableOpacity 
-                  style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border }]} 
+                  style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border, ...Platform.select({
+                    web: {
+                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+                    },
+                    default: {
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 2,
+                      },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 8,
+                      elevation: 4,
+                    },
+                  }) }]} 
                   onPress={pickImage}
                 >
                   <Upload size={32} color="#9B59B6" />
@@ -416,7 +514,21 @@ export default function ScreenshotTab() {
 
                 {Platform.OS !== 'web' && (
                   <TouchableOpacity 
-                    style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border }]} 
+                    style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border, ...Platform.select({
+                      web: {
+                        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+                      },
+                      default: {
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
+                        elevation: 4,
+                      },
+                    }) }]} 
                     onPress={takePhoto}
                   >
                     <Camera size={32} color="#9B59B6" />
@@ -462,7 +574,22 @@ export default function ScreenshotTab() {
           <TouchableOpacity
             style={[
               styles.processButton,
-              (!selectedImage || loading) && styles.processButtonDisabled
+              (!selectedImage || loading) && styles.processButtonDisabled,
+              Platform.select({
+                web: {
+                  boxShadow: '0px 4px 8px rgba(155, 89, 182, 0.3)',
+                },
+                default: {
+                  shadowColor: '#9B59B6',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                },
+              })
             ]}
             onPress={handleProcessScreenshot}
             disabled={!selectedImage || loading}
@@ -528,14 +655,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 2,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   signInPromptTitle: {
     fontSize: 20,
@@ -565,14 +684,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   usageTitle: {
     fontSize: 16,
@@ -620,14 +731,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderStyle: 'dashed',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   uploadButtonText: {
     fontSize: 16,
@@ -656,14 +759,6 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   imageScrollContainer: {
     maxHeight: screenHeight * 0.5, // Limit to 50% of screen height
@@ -679,14 +774,6 @@ const styles = StyleSheet.create({
     minHeight: 300,
     maxHeight: screenHeight * 0.7, // Max 70% of screen height
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
   },
   imageActions: {
     alignItems: 'center',
@@ -698,14 +785,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   changeImageText: {
     fontSize: 14,
@@ -742,14 +821,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#9B59B6',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
   },
   processButtonDisabled: {
     backgroundColor: '#A0AEC0',

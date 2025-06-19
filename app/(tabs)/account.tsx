@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { BannerAd } from '@/components/BannerAd';
 import { User, Crown, ChartBar as BarChart3, Star, Settings, LogOut, Edit } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
@@ -132,7 +132,21 @@ export default function AccountTab() {
         </View>
 
         {/* User Info Card */}
-        <View style={[styles.userCard, { backgroundColor: colors.cardBackground }]}>
+        <View style={[styles.userCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+          web: {
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          },
+          default: {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          },
+        }) }]}>
           <View style={styles.userInfo}>
             <View style={[styles.avatarContainer, { backgroundColor: isDarkMode ? '#4A5568' : '#FFF5F5' }]}>
               <User size={32} color="#FF6B7A" />
@@ -187,7 +201,21 @@ export default function AccountTab() {
 
         {/* Account Status Card */}
         {user && (
-          <View style={[styles.statusCard, { backgroundColor: colors.cardBackground }]}>
+          <View style={[styles.statusCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+            web: {
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            },
+            default: {
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
+            },
+          }) }]}>
             <View style={styles.statusHeader}>
               <Text style={[styles.statusTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>
                 Account Status
@@ -234,7 +262,21 @@ export default function AccountTab() {
         )}
 
         {/* Usage Statistics */}
-        <View style={[styles.statsCard, { backgroundColor: colors.cardBackground }]}>
+        <View style={[styles.statsCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+          web: {
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          },
+          default: {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          },
+        }) }]}>
           <View style={styles.statsHeader}>
             <BarChart3 size={24} color="#9B59B6" />
             <Text style={[styles.statsTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>
@@ -317,7 +359,21 @@ export default function AccountTab() {
 
         {/* Premium Features */}
         {(!user || (userProfile?.plan_type !== 'premium' && !isPremium)) && (
-          <View style={[styles.premiumCard, { backgroundColor: colors.cardBackground }]}>
+          <View style={[styles.premiumCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+            web: {
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+            },
+            default: {
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.15,
+              shadowRadius: 12,
+              elevation: 8,
+            },
+          }) }]}>
             <View style={styles.premiumHeader}>
               <Crown size={24} color="#FFD700" />
               <Text style={[styles.premiumTitle, { color: colors.text, fontFamily: 'Poppins-Bold' }]}>Upgrade to Premium</Text>
@@ -345,7 +401,21 @@ export default function AccountTab() {
             </View>
             
             <TouchableOpacity
-              style={styles.premiumUpgradeButton}
+              style={[styles.premiumUpgradeButton, Platform.select({
+                web: {
+                  boxShadow: '0px 4px 8px rgba(255, 215, 0, 0.3)',
+                },
+                default: {
+                  shadowColor: '#FFD700',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                },
+              })]}
               onPress={handleUpgradeToPremium}
             >
               <Crown size={20} color="white" />
@@ -355,7 +425,21 @@ export default function AccountTab() {
         )}
 
         {/* Actions */}
-        <View style={[styles.actionsCard, { backgroundColor: colors.cardBackground }]}>
+        <View style={[styles.actionsCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+          web: {
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          },
+          default: {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          },
+        }) }]}>
           <TouchableOpacity style={styles.actionItem} onPress={handleSettings}>
             <Settings size={20} color={colors.textSecondary} />
             <Text style={[styles.actionText, { color: colors.text, fontFamily: 'Poppins-Regular' }]}>Settings</Text>
@@ -370,7 +454,21 @@ export default function AccountTab() {
         </View>
 
         {/* App Info */}
-        <View style={[styles.appInfoCard, { backgroundColor: colors.cardBackground }]}>
+        <View style={[styles.appInfoCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+          web: {
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          },
+          default: {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          },
+        }) }]}>
           <Text style={[styles.appInfoTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>About FlirtShaala</Text>
           <Text style={[styles.appInfoText, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>
             Your AI wingman for crafting perfect chat responses. Smart language detection and witty replies in multiple languages!
@@ -448,14 +546,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   userInfo: {
     flexDirection: 'row',
@@ -528,14 +618,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   statusHeader: {
     flexDirection: 'row',
@@ -573,14 +655,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   statsHeader: {
     flexDirection: 'row',
@@ -646,14 +720,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 24,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
     borderWidth: 2,
     borderColor: '#FFD700',
   },
@@ -690,14 +756,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#FFD700',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
   },
   premiumUpgradeText: {
     color: 'white',
@@ -708,14 +766,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   actionItem: {
     flexDirection: 'row',
@@ -730,14 +780,6 @@ const styles = StyleSheet.create({
   appInfoCard: {
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   appInfoTitle: {
     fontSize: 18,

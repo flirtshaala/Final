@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -17,9 +17,27 @@ export function ThemedGradientBackground({ children, style }: ThemedGradientBack
   // Dark mode: Deep purple gradient with better contrast
   const darkColors = ['#0F0F23', '#1A1B3A', '#252659'];
 
+  const colors = isDarkMode ? darkColors : lightColors;
+
+  if (Platform.OS === 'web') {
+    return (
+      <View
+        style={[
+          styles.gradient,
+          {
+            background: `linear-gradient(135deg, ${colors.join(', ')})`,
+          },
+          style,
+        ]}
+      >
+        {children}
+      </View>
+    );
+  }
+
   return (
     <LinearGradient
-      colors={isDarkMode ? darkColors : lightColors}
+      colors={colors}
       style={[styles.gradient, style]}
     >
       {children}

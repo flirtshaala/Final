@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Camera, MessageCircle, Heart, User } from 'lucide-react-native';
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -9,17 +10,24 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 0,
-          elevation: 8,
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: -4,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
           height: 80,
           paddingBottom: 20,
           paddingTop: 8,
+          ...Platform.select({
+            web: {
+              boxShadow: '0px -4px 8px rgba(0, 0, 0, 0.1)',
+            },
+            default: {
+              elevation: 8,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: -4,
+              },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+            },
+          }),
         },
         tabBarActiveTintColor: '#FF6B7A',
         tabBarInactiveTintColor: '#9CA3AF',

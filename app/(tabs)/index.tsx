@@ -8,11 +8,12 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import { MessageCircle, Send, Sparkles } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { BannerAd } from '@/components/BannerAd';
 import { useUser } from '@/context/UserContext';
 import { useAuth } from '@/context/AuthContext';
@@ -195,7 +196,21 @@ export default function ChatTab() {
 
           {/* Sign In Prompt for Non-Authenticated Users */}
           {!user && (
-            <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#FF6B7A' }]}>
+            <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#FF6B7A', ...Platform.select({
+              web: {
+                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+              },
+              default: {
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 4,
+              },
+            }) }]}>
               <Text style={[styles.signInPromptTitle, { color: colors.text }]}>Sign In Required</Text>
               <Text style={[styles.signInPromptText, { color: colors.textSecondary }]}>
                 Please sign in to generate AI responses and access all features
@@ -211,7 +226,21 @@ export default function ChatTab() {
 
           {/* Today's Usage - Only for authenticated users */}
           {user && !isPremium && (
-            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+              web: {
+                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+              },
+              default: {
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 4,
+              },
+            }) }]}>
               <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Today's Usage</Text>
               <View style={styles.usageStats}>
                 <View style={styles.usageStat}>
@@ -238,7 +267,21 @@ export default function ChatTab() {
 
           {/* Premium Usage Stats */}
           {user && isPremium && (
-            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
+              web: {
+                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+              },
+              default: {
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 4,
+              },
+            }) }]}>
               <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Premium Usage Today</Text>
               <View style={styles.usageStats}>
                 <View style={styles.usageStat}>
@@ -255,7 +298,18 @@ export default function ChatTab() {
 
           {/* Pickup Line Section - Only for authenticated users */}
           {user && (
-            <View style={[styles.pickupSection, { backgroundColor: colors.cardBackground }]}>
+            <View style={[styles.pickupSection, { backgroundColor: colors.cardBackground, ...Platform.select({
+              web: {
+                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+              },
+              default: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 4,
+              },
+            }) }]}>
               <View style={styles.pickupHeader}>
                 <Sparkles size={20} color="#8B5CF6" />
                 <Text style={[styles.pickupTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Break the Ice</Text>
@@ -416,14 +470,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 2,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   signInPromptTitle: {
     fontSize: 20,
@@ -453,14 +499,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   usageTitle: {
     fontSize: 16,
@@ -496,11 +534,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   pickupHeader: {
     flexDirection: 'row',

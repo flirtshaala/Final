@@ -1,48 +1,53 @@
 import { Tabs } from 'expo-router';
-import { Camera, MessageCircle, Heart, User } from 'lucide-react-native';
+import { User, Camera, MessageCircle, Clock } from 'lucide-react-native';
 import { Platform } from 'react-native';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function TabLayout() {
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.surface,
           borderTopWidth: 0,
           height: 80,
           paddingBottom: 20,
           paddingTop: 8,
           ...Platform.select({
             web: {
-              boxShadow: '0px -4px 8px rgba(0, 0, 0, 0.1)',
+              boxShadow: isDarkMode 
+                ? '0px -4px 8px rgba(255, 255, 255, 0.05)' 
+                : '0px -4px 8px rgba(0, 0, 0, 0.1)',
             },
             default: {
               elevation: 8,
-              shadowColor: '#000',
+              shadowColor: isDarkMode ? '#FFFFFF' : '#000000',
               shadowOffset: {
                 width: 0,
                 height: -4,
               },
-              shadowOpacity: 0.1,
+              shadowOpacity: isDarkMode ? 0.05 : 0.1,
               shadowRadius: 8,
             },
           }),
         },
         tabBarActiveTintColor: '#FF6B7A',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '600',
+          fontFamily: 'ProximaNova-SemiBold',
           marginTop: 4,
         },
       }}>
       <Tabs.Screen
-        name="index"
+        name="account"
         options={{
-          title: 'Chat',
+          title: 'Account',
           tabBarIcon: ({ size, color }) => (
-            <MessageCircle size={size} color={color} />
+            <User size={size} color={color} />
           ),
         }}
       />
@@ -56,20 +61,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="result"
+        name="index"
         options={{
-          title: 'Results',
+          title: 'Chat',
           tabBarIcon: ({ size, color }) => (
-            <Heart size={size} color={color} />
+            <MessageCircle size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="account"
+        name="history"
         options={{
-          title: 'Account',
+          title: 'History',
           tabBarIcon: ({ size, color }) => (
-            <User size={size} color={color} />
+            <Clock size={size} color={color} />
           ),
         }}
       />

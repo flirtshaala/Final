@@ -3,6 +3,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts } from 'expo-font';
+import {
+  ProximaNova_400Regular,
+  ProximaNova_600SemiBold,
+  ProximaNova_700Bold,
+} from '@expo-google-fonts/proxima-nova';
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
@@ -16,7 +21,9 @@ export default function RootLayout() {
   useFrameworkReady();
 
   const [fontsLoaded, fontError] = useFonts({
-    // Add custom fonts here if needed
+    'ProximaNova-Regular': ProximaNova_400Regular,
+    'ProximaNova-SemiBold': ProximaNova_600SemiBold,
+    'ProximaNova-Bold': ProximaNova_700Bold,
   });
 
   useEffect(() => {

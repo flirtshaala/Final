@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, Platform, Scrol
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { BannerAd } from '@/components/BannerAd';
+import BannerAd from '@/components/BannerAd';
 import { Camera, Image as ImageIcon, Upload, X } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
 import { useAuth } from '@/context/AuthContext';
@@ -237,7 +237,7 @@ export default function ScreenshotTab() {
         await adService.showInterstitialAd();
       }
       
-      console.log('Navigating to result page with:', {
+      console.log('Navigating to history page with:', {
         response,
         originalText: extractedText,
         responseType,
@@ -245,7 +245,7 @@ export default function ScreenshotTab() {
       });
       
       router.push({
-        pathname: '/(tabs)/result',
+        pathname: '/(tabs)/history',
         params: { 
           response: response.trim(),
           originalText: extractedText.trim(),
@@ -291,27 +291,13 @@ export default function ScreenshotTab() {
         <View style={styles.header}>
           <View style={styles.titleContainer}>
             <ImageIcon size={28} color="#9B59B6" />
-            <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins-Bold' }]}>FlirtShaala</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Screenshot Analysis</Text>
           </View>
         </View>
 
         {/* Sign In Prompt for Non-Authenticated Users */}
         {!user && (
-          <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#9B59B6', ...Platform.select({
-            web: {
-              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-            },
-            default: {
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            },
-          }) }]}>
+          <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#9B59B6' }]}>
             <Text style={[styles.signInPromptTitle, { color: colors.text }]}>Sign In Required</Text>
             <Text style={[styles.signInPromptText, { color: colors.textSecondary }]}>
               Please sign in to use screenshot analysis and generate AI responses
@@ -327,30 +313,16 @@ export default function ScreenshotTab() {
 
         {/* Today's Usage - Only for authenticated users */}
         {user && !isPremium && (
-          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
-            web: {
-              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-            },
-            default: {
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            },
-          }) }]}>
-            <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Today's Usage</Text>
+          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.usageTitle, { color: colors.text }]}>Today's Usage</Text>
             <View style={styles.usageStats}>
               <View style={styles.usageStat}>
-                <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{usageStats.adReplies}/50</Text>
-                <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Replies</Text>
+                <Text style={[styles.usageNumber]}>{usageStats.adReplies}/50</Text>
+                <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Replies</Text>
               </View>
               <View style={styles.usageStat}>
-                <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{50 - usageStats.dailyReplies}</Text>
-                <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Remaining</Text>
+                <Text style={[styles.usageNumber]}>{50 - usageStats.dailyReplies}</Text>
+                <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Remaining</Text>
               </View>
             </View>
             {usageStats.dailyReplies >= 40 && (
@@ -358,7 +330,7 @@ export default function ScreenshotTab() {
                 style={[styles.upgradePrompt, { backgroundColor: colors.surfaceSecondary }]}
                 onPress={() => router.push('/premium')}
               >
-                <Text style={[styles.upgradePromptText, { color: colors.primary, fontFamily: 'Poppins-SemiBold' }]}>
+                <Text style={[styles.upgradePromptText, { color: colors.primary }]}>
                   Running low on replies? Upgrade to Premium for unlimited access!
                 </Text>
               </TouchableOpacity>
@@ -368,30 +340,16 @@ export default function ScreenshotTab() {
 
         {/* Premium Usage Stats */}
         {user && isPremium && (
-          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
-            web: {
-              boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-            },
-            default: {
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            },
-          }) }]}>
-            <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Premium Usage Today</Text>
+          <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.usageTitle, { color: colors.text }]}>Premium Usage Today</Text>
             <View style={styles.usageStats}>
               <View style={styles.usageStat}>
-                <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{usageStats.adFreeReplies}/30</Text>
-                <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Ad-free</Text>
+                <Text style={[styles.usageNumber]}>{usageStats.adFreeReplies}/30</Text>
+                <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Ad-free</Text>
               </View>
               <View style={styles.usageStat}>
-                <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{usageStats.adReplies}/50</Text>
-                <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>With ads</Text>
+                <Text style={[styles.usageNumber]}>{usageStats.adReplies}/50</Text>
+                <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>With ads</Text>
               </View>
             </View>
           </View>
@@ -400,28 +358,14 @@ export default function ScreenshotTab() {
         {/* Choose from Gallery Section - Only for authenticated users */}
         {user && (
           <View style={styles.imageSection}>
-            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Choose from Gallery</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Choose from Gallery</Text>
             
             {selectedImage ? (
               <View style={styles.selectedImageContainer}>
                 <View style={styles.imagePreviewHeader}>
-                  <Text style={[styles.imagePreviewTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Selected Screenshot</Text>
+                  <Text style={[styles.imagePreviewTitle, { color: colors.text }]}>Selected Screenshot</Text>
                   <TouchableOpacity
-                    style={[styles.removeImageButton, { backgroundColor: colors.surfaceSecondary, ...Platform.select({
-                      web: {
-                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                      },
-                      default: {
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 2,
-                        },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 4,
-                        elevation: 2,
-                      },
-                    }) }]}
+                    style={[styles.removeImageButton, { backgroundColor: colors.surfaceSecondary }]}
                     onPress={removeImage}
                   >
                     <X size={20} color={colors.text} />
@@ -438,21 +382,7 @@ export default function ScreenshotTab() {
                     source={{ uri: selectedImage }} 
                     style={[
                       styles.selectedImage,
-                      { backgroundColor: colors.surfaceSecondary, ...Platform.select({
-                        web: {
-                          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
-                        },
-                        default: {
-                          shadowColor: '#000',
-                          shadowOffset: {
-                            width: 0,
-                            height: 4,
-                          },
-                          shadowOpacity: 0.15,
-                          shadowRadius: 12,
-                          elevation: 8,
-                        },
-                      }) }
+                      { backgroundColor: colors.surfaceSecondary }
                     ]}
                     resizeMode="contain"
                     onError={(error) => {
@@ -465,75 +395,33 @@ export default function ScreenshotTab() {
                 
                 <View style={styles.imageActions}>
                   <TouchableOpacity
-                    style={[styles.changeImageButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, ...Platform.select({
-                      web: {
-                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-                      },
-                      default: {
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 2,
-                        },
-                        shadowOpacity: 0.05,
-                        shadowRadius: 4,
-                        elevation: 2,
-                      },
-                    }) }]}
+                    style={[styles.changeImageButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
                     onPress={pickImage}
                   >
                     <Upload size={16} color={colors.text} />
-                    <Text style={[styles.changeImageText, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Change Image</Text>
+                    <Text style={[styles.changeImageText, { color: colors.text }]}>Change Image</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             ) : (
               <View style={styles.uploadOptions}>
                 <TouchableOpacity 
-                  style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border, ...Platform.select({
-                    web: {
-                      boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-                    },
-                    default: {
-                      shadowColor: '#000',
-                      shadowOffset: {
-                        width: 0,
-                        height: 2,
-                      },
-                      shadowOpacity: 0.1,
-                      shadowRadius: 8,
-                      elevation: 4,
-                    },
-                  }) }]} 
+                  style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border }]} 
                   onPress={pickImage}
                 >
                   <Upload size={32} color="#9B59B6" />
-                  <Text style={[styles.uploadButtonText, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Choose from Gallery</Text>
-                  <Text style={[styles.uploadButtonSubtext, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Select a chat screenshot</Text>
+                  <Text style={[styles.uploadButtonText, { color: colors.text }]}>Choose from Gallery</Text>
+                  <Text style={[styles.uploadButtonSubtext, { color: colors.textSecondary }]}>Select a chat screenshot</Text>
                 </TouchableOpacity>
 
                 {Platform.OS !== 'web' && (
                   <TouchableOpacity 
-                    style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border, ...Platform.select({
-                      web: {
-                        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-                      },
-                      default: {
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 2,
-                        },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 8,
-                        elevation: 4,
-                      },
-                    }) }]} 
+                    style={[styles.uploadButton, { backgroundColor: colors.surface, borderColor: colors.border }]} 
                     onPress={takePhoto}
                   >
                     <Camera size={32} color="#9B59B6" />
-                    <Text style={[styles.uploadButtonText, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Take Photo</Text>
-                    <Text style={[styles.uploadButtonSubtext, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Capture a screenshot</Text>
+                    <Text style={[styles.uploadButtonText, { color: colors.text }]}>Take Photo</Text>
+                    <Text style={[styles.uploadButtonSubtext, { color: colors.textSecondary }]}>Capture a screenshot</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -544,7 +432,7 @@ export default function ScreenshotTab() {
         {/* Response Type Selection - Only for authenticated users with selected image */}
         {user && selectedImage && (
           <View style={styles.responseTypeContainer}>
-            <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Response Style</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Response Style</Text>
             <View style={styles.responseTypeButtons}>
               {['flirty', 'witty', 'savage'].map((type) => (
                 <TouchableOpacity
@@ -558,7 +446,7 @@ export default function ScreenshotTab() {
                 >
                   <Text style={[
                     styles.responseTypeText,
-                    { color: colors.text, fontFamily: 'Poppins-SemiBold' },
+                    { color: colors.text },
                     responseType === type && styles.responseTypeTextActive
                   ]}>
                     {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -574,28 +462,13 @@ export default function ScreenshotTab() {
           <TouchableOpacity
             style={[
               styles.processButton,
-              (!selectedImage || loading) && styles.processButtonDisabled,
-              Platform.select({
-                web: {
-                  boxShadow: '0px 4px 8px rgba(155, 89, 182, 0.3)',
-                },
-                default: {
-                  shadowColor: '#9B59B6',
-                  shadowOffset: {
-                    width: 0,
-                    height: 4,
-                  },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 4,
-                },
-              })
+              (!selectedImage || loading) && styles.processButtonDisabled
             ]}
             onPress={handleProcessScreenshot}
             disabled={!selectedImage || loading}
           >
             <ImageIcon size={20} color="white" />
-            <Text style={[styles.processButtonText, { fontFamily: 'Poppins-Bold' }]}>
+            <Text style={[styles.processButtonText]}>
               Get Witty Reply
             </Text>
           </TouchableOpacity>
@@ -627,13 +500,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: 'ProximaNova-SemiBold',
     marginTop: 16,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'ProximaNova-Regular',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -647,6 +520,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
+    fontFamily: 'ProximaNova-Bold',
     marginLeft: 12,
   },
   signInPromptCard: {
@@ -658,13 +532,13 @@ const styles = StyleSheet.create({
   },
   signInPromptTitle: {
     fontSize: 20,
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'ProximaNova-Bold',
     marginBottom: 8,
     textAlign: 'center',
   },
   signInPromptText: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'ProximaNova-Regular',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 20,
@@ -678,7 +552,7 @@ const styles = StyleSheet.create({
   signInPromptButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: 'ProximaNova-SemiBold',
   },
   usageCard: {
     borderRadius: 16,
@@ -687,6 +561,7 @@ const styles = StyleSheet.create({
   },
   usageTitle: {
     fontSize: 16,
+    fontFamily: 'ProximaNova-SemiBold',
     marginBottom: 12,
   },
   usageStats: {
@@ -698,10 +573,12 @@ const styles = StyleSheet.create({
   },
   usageNumber: {
     fontSize: 20,
+    fontFamily: 'ProximaNova-Bold',
     color: '#9B59B6',
   },
   usageLabel: {
     fontSize: 12,
+    fontFamily: 'ProximaNova-Regular',
     marginTop: 4,
   },
   upgradePrompt: {
@@ -713,10 +590,12 @@ const styles = StyleSheet.create({
   },
   upgradePromptText: {
     fontSize: 14,
+    fontFamily: 'ProximaNova-SemiBold',
     textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 18,
+    fontFamily: 'ProximaNova-SemiBold',
     marginBottom: 16,
   },
   imageSection: {
@@ -734,10 +613,12 @@ const styles = StyleSheet.create({
   },
   uploadButtonText: {
     fontSize: 16,
+    fontFamily: 'ProximaNova-SemiBold',
     marginTop: 12,
   },
   uploadButtonSubtext: {
     fontSize: 14,
+    fontFamily: 'ProximaNova-Regular',
     marginTop: 4,
   },
   selectedImageContainer: {
@@ -752,6 +633,7 @@ const styles = StyleSheet.create({
   },
   imagePreviewTitle: {
     fontSize: 16,
+    fontFamily: 'ProximaNova-SemiBold',
   },
   removeImageButton: {
     width: 36,
@@ -788,6 +670,7 @@ const styles = StyleSheet.create({
   },
   changeImageText: {
     fontSize: 14,
+    fontFamily: 'ProximaNova-SemiBold',
     marginLeft: 8,
   },
   responseTypeContainer: {
@@ -810,6 +693,7 @@ const styles = StyleSheet.create({
   },
   responseTypeText: {
     fontSize: 14,
+    fontFamily: 'ProximaNova-SemiBold',
   },
   responseTypeTextActive: {
     color: 'white',
@@ -824,11 +708,11 @@ const styles = StyleSheet.create({
   },
   processButtonDisabled: {
     backgroundColor: '#A0AEC0',
-    shadowOpacity: 0.1,
   },
   processButtonText: {
     color: 'white',
     fontSize: 16,
+    fontFamily: 'ProximaNova-Bold',
     marginLeft: 8,
   },
   bottomSpacing: {

@@ -15,7 +15,6 @@ import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import BannerAd from '@/components/BannerAd';
-import { User, Crown, ChartBar as BarChart3, Star, Settings, LogOut, CreditCard as Edit } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -123,14 +122,14 @@ export default function ChatTab() {
         await adService.showInterstitialAd();
       }
       
-      console.log('Navigating to result page with:', {
+      console.log('Navigating to history page with:', {
         response,
         originalText: message,
         responseType
       });
       
       router.push({
-        pathname: '/(tabs)/result',
+        pathname: '/(tabs)/history',
         params: { 
           response: response.trim(),
           originalText: message.trim(),
@@ -191,27 +190,13 @@ export default function ChatTab() {
           <View style={styles.header}>
             <View style={styles.titleContainer}>
               <MessageCircle size={28} color="#FF6B7A" />
-              <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins-Bold' }]}>FlirtShaala</Text>
+              <Text style={[styles.title, { color: colors.text }]}>Chat Response</Text>
             </View>
           </View>
 
           {/* Sign In Prompt for Non-Authenticated Users */}
           {!user && (
-            <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#FF6B7A', ...Platform.select({
-              web: {
-                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-              },
-              default: {
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 4,
-              },
-            }) }]}>
+            <View style={[styles.signInPromptCard, { backgroundColor: colors.cardBackground, borderColor: '#FF6B7A' }]}>
               <Text style={[styles.signInPromptTitle, { color: colors.text }]}>Sign In Required</Text>
               <Text style={[styles.signInPromptText, { color: colors.textSecondary }]}>
                 Please sign in to generate AI responses and access all features
@@ -227,30 +212,16 @@ export default function ChatTab() {
 
           {/* Today's Usage - Only for authenticated users */}
           {user && !isPremium && (
-            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
-              web: {
-                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-              },
-              default: {
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 4,
-              },
-            }) }]}>
-              <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Today's Usage</Text>
+            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+              <Text style={[styles.usageTitle, { color: colors.text }]}>Today's Usage</Text>
               <View style={styles.usageStats}>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{usageStats.adReplies}/50</Text>
-                  <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Replies</Text>
+                  <Text style={[styles.usageNumber]}>{usageStats.adReplies}/50</Text>
+                  <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Replies</Text>
                 </View>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{50 - usageStats.dailyReplies}</Text>
-                  <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Remaining</Text>
+                  <Text style={[styles.usageNumber]}>{50 - usageStats.dailyReplies}</Text>
+                  <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Remaining</Text>
                 </View>
               </View>
               {usageStats.dailyReplies >= 40 && (
@@ -258,7 +229,7 @@ export default function ChatTab() {
                   style={[styles.upgradePrompt, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => router.push('/premium')}
                 >
-                  <Text style={[styles.upgradePromptText, { color: colors.primary, fontFamily: 'Poppins-SemiBold' }]}>
+                  <Text style={[styles.upgradePromptText, { color: colors.primary }]}>
                     Running low on replies? Upgrade to Premium for unlimited access!
                   </Text>
                 </TouchableOpacity>
@@ -268,30 +239,16 @@ export default function ChatTab() {
 
           {/* Premium Usage Stats */}
           {user && isPremium && (
-            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground, ...Platform.select({
-              web: {
-                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-              },
-              default: {
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 4,
-              },
-            }) }]}>
-              <Text style={[styles.usageTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Premium Usage Today</Text>
+            <View style={[styles.usageCard, { backgroundColor: colors.cardBackground }]}>
+              <Text style={[styles.usageTitle, { color: colors.text }]}>Premium Usage Today</Text>
               <View style={styles.usageStats}>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{usageStats.adFreeReplies}/30</Text>
-                  <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>Ad-free</Text>
+                  <Text style={[styles.usageNumber]}>{usageStats.adFreeReplies}/30</Text>
+                  <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Ad-free</Text>
                 </View>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber, { fontFamily: 'Poppins-Bold' }]}>{usageStats.adReplies}/50</Text>
-                  <Text style={[styles.usageLabel, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>With ads</Text>
+                  <Text style={[styles.usageNumber]}>{usageStats.adReplies}/50</Text>
+                  <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>With ads</Text>
                 </View>
               </View>
             </View>
@@ -299,32 +256,21 @@ export default function ChatTab() {
 
           {/* Pickup Line Section - Only for authenticated users */}
           {user && (
-            <View style={[styles.pickupSection, { backgroundColor: colors.cardBackground, ...Platform.select({
-              web: {
-                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-              },
-              default: {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 4,
-              },
-            }) }]}>
+            <View style={[styles.pickupSection, { backgroundColor: colors.cardBackground }]}>
               <View style={styles.pickupHeader}>
                 <Sparkles size={20} color="#8B5CF6" />
-                <Text style={[styles.pickupTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Break the Ice</Text>
+                <Text style={[styles.pickupTitle, { color: colors.text }]}>Break the Ice</Text>
               </View>
               
               {pickupLine ? (
                 <View style={[styles.pickupResult, { backgroundColor: colors.surfaceSecondary }]}>
-                  <Text style={[styles.pickupText, { color: colors.text, fontFamily: 'Poppins-Regular' }]}>{pickupLine}</Text>
+                  <Text style={[styles.pickupText, { color: colors.text }]}>{pickupLine}</Text>
                   <TouchableOpacity
                     style={styles.newPickupButton}
                     onPress={handleGetPickupLine}
                     disabled={pickupLoading}
                   >
-                    <Text style={[styles.newPickupText, { fontFamily: 'Poppins-SemiBold' }]}>Get Another</Text>
+                    <Text style={[styles.newPickupText]}>Get Another</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -338,7 +284,7 @@ export default function ChatTab() {
                   ) : (
                     <>
                       <Sparkles size={16} color="white" />
-                      <Text style={[styles.pickupButtonText, { fontFamily: 'Poppins-SemiBold' }]}>Get Pickup Line</Text>
+                      <Text style={[styles.pickupButtonText]}>Get Pickup Line</Text>
                     </>
                   )}
                 </TouchableOpacity>
@@ -349,7 +295,7 @@ export default function ChatTab() {
           {/* Response Type Selection - Only for authenticated users */}
           {user && (
             <View style={styles.typeSection}>
-              <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Response Style</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Response Style</Text>
               <View style={styles.typeButtons}>
                 {responseTypes.map((type) => (
                   <TouchableOpacity
@@ -364,7 +310,7 @@ export default function ChatTab() {
                     <Text
                       style={[
                         styles.typeButtonText,
-                        { color: colors.text, fontFamily: 'Poppins-SemiBold' },
+                        { color: colors.text },
                         responseType === type.key && { color: 'white' },
                       ]}
                     >
@@ -379,7 +325,7 @@ export default function ChatTab() {
           {/* Message Input - Only for authenticated users */}
           {user && (
             <View style={styles.inputSection}>
-              <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Your Message</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Message</Text>
               <TextInput
                 style={[styles.textInput, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
                 placeholder="Paste the message you want to respond to..."
@@ -407,7 +353,7 @@ export default function ChatTab() {
               ) : (
                 <>
                   <Send size={20} color="white" />
-                  <Text style={[styles.generateButtonText, { fontFamily: 'Poppins-Bold' }]}>Generate Response</Text>
+                  <Text style={[styles.generateButtonText]}>Generate Response</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -443,13 +389,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: 'ProximaNova-SemiBold',
     marginTop: 16,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'ProximaNova-Regular',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -463,6 +409,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
+    fontFamily: 'ProximaNova-Bold',
     marginLeft: 12,
   },
   signInPromptCard: {
@@ -474,13 +421,13 @@ const styles = StyleSheet.create({
   },
   signInPromptTitle: {
     fontSize: 20,
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'ProximaNova-Bold',
     marginBottom: 8,
     textAlign: 'center',
   },
   signInPromptText: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'ProximaNova-Regular',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 20,
@@ -494,7 +441,7 @@ const styles = StyleSheet.create({
   signInPromptButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: 'ProximaNova-SemiBold',
   },
   usageCard: {
     borderRadius: 16,
@@ -503,6 +450,7 @@ const styles = StyleSheet.create({
   },
   usageTitle: {
     fontSize: 16,
+    fontFamily: 'ProximaNova-SemiBold',
     marginBottom: 12,
   },
   usageStats: {
@@ -514,10 +462,12 @@ const styles = StyleSheet.create({
   },
   usageNumber: {
     fontSize: 20,
+    fontFamily: 'ProximaNova-Bold',
     color: '#FF6B7A',
   },
   usageLabel: {
     fontSize: 12,
+    fontFamily: 'ProximaNova-Regular',
     marginTop: 4,
   },
   upgradePrompt: {
@@ -529,6 +479,7 @@ const styles = StyleSheet.create({
   },
   upgradePromptText: {
     fontSize: 14,
+    fontFamily: 'ProximaNova-SemiBold',
     textAlign: 'center',
   },
   pickupSection: {
@@ -543,6 +494,7 @@ const styles = StyleSheet.create({
   },
   pickupTitle: {
     fontSize: 18,
+    fontFamily: 'ProximaNova-SemiBold',
     marginLeft: 8,
   },
   pickupButton: {
@@ -557,6 +509,7 @@ const styles = StyleSheet.create({
   pickupButtonText: {
     color: 'white',
     fontSize: 16,
+    fontFamily: 'ProximaNova-SemiBold',
     marginLeft: 8,
   },
   pickupResult: {
@@ -565,6 +518,7 @@ const styles = StyleSheet.create({
   },
   pickupText: {
     fontSize: 16,
+    fontFamily: 'ProximaNova-Regular',
     lineHeight: 24,
     marginBottom: 12,
   },
@@ -578,12 +532,14 @@ const styles = StyleSheet.create({
   newPickupText: {
     color: 'white',
     fontSize: 14,
+    fontFamily: 'ProximaNova-SemiBold',
   },
   typeSection: {
     marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 18,
+    fontFamily: 'ProximaNova-SemiBold',
     marginBottom: 12,
   },
   typeButtons: {
@@ -600,6 +556,7 @@ const styles = StyleSheet.create({
   },
   typeButtonText: {
     fontSize: 16,
+    fontFamily: 'ProximaNova-SemiBold',
   },
   inputSection: {
     marginBottom: 24,
@@ -608,6 +565,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
+    fontFamily: 'ProximaNova-Regular',
     textAlignVertical: 'top',
     minHeight: 120,
     borderWidth: 1,
@@ -627,6 +585,7 @@ const styles = StyleSheet.create({
   generateButtonText: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'ProximaNova-Bold',
     marginLeft: 8,
   },
   bottomSpacing: {

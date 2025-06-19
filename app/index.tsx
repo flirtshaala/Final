@@ -1,34 +1,27 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
 import { Heart } from 'lucide-react-native';
 
 export default function WelcomeScreen() {
-  const { user, loading } = useAuth();
-
   useEffect(() => {
-    if (!loading) {
-      // Always navigate to tabs - authentication is handled within the app
+    // Navigate to tabs after a short delay
+    const timer = setTimeout(() => {
       router.replace('/(tabs)');
-    }
-  }, [loading]);
+    }, 2000);
 
-  // Show splash screen while loading
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Heart size={64} color="#FF6B7A" fill="#FF6B7A" />
-          <Text style={styles.appName}>FlirtShaala</Text>
-          <Text style={styles.tagline}>Chat Smarter. Flirt Better.</Text>
-        </View>
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Heart size={64} color="#FF6B7A" fill="#FF6B7A" />
+        <Text style={styles.appName}>FlirtShaala</Text>
+        <Text style={styles.tagline}>Chat Smarter. Flirt Better.</Text>
       </View>
-    );
-  }
-
-  // This return should never be reached due to navigation
-  return null;
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

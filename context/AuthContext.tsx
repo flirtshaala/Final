@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { AuthService, supabase } from '@/services/auth';
-import { router } from 'expo-router';
+import { supabase } from '@/services/supabase';
+import { Platform } from 'react-native';
 
 interface UserProfile {
   id: string;
@@ -37,12 +37,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            await loadUserProfile(session.user.id);
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error in getInitialSession:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     getInitialSession();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         console.log('Auth state changed:', event, session?.user?.id);
         
         setSession(session);
@@ -57,33 +85,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
 
         // Handle auth events
-        if (event === 'SIGNED_IN') {
-          // Create or update user profile in database
-          if (session?.user) {
-            await createOrUpdateUserProfile(session.user);
-          }
+        if (event === 'SIGNED_IN' && session?.user) {
+          await createOrUpdateUserProfile(session.user);
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  const getInitialSession = async () => {
-    try {
-      const session = await AuthService.getSession();
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await loadUserProfile(session.user.id);
-      }
-    } catch (error) {
-      console.error('Error getting initial session:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const loadUserProfile = async (userId: string) => {
     try {
@@ -94,7 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        throw error;
+        console.error('Error loading user profile:', error);
+        return;
       }
 
       setUserProfile(profile);
@@ -113,7 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
-        throw fetchError;
+        console.error('Error fetching user profile:', fetchError);
+        return;
       }
 
       if (!existingProfile) {
@@ -157,7 +171,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      await AuthService.signInWithGoogle();
+      
+      if (Platform.OS === 'web') {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+        if (error) throw error;
+      } else {
+        // For mobile, we'll implement this later
+        throw new Error('Google sign-in not implemented for mobile yet');
+      }
     } catch (error) {
       console.error('Google sign in error:', error);
       throw error;
@@ -169,7 +195,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     try {
       setLoading(true);
-      await AuthService.signInWithEmail(email, password);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
     } catch (error) {
       console.error('Email sign in error:', error);
       throw error;
@@ -181,7 +211,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUpWithEmail = async (email: string, password: string, userData?: any) => {
     try {
       setLoading(true);
-      await AuthService.signUpWithEmail(email, password, userData);
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: userData,
+        },
+      });
+      if (error) throw error;
     } catch (error) {
       console.error('Email sign up error:', error);
       throw error;
@@ -193,8 +230,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setLoading(true);
-      await AuthService.signOut();
-      router.replace('/auth/login');
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
     } catch (error) {
       console.error('Sign out error:', error);
       throw error;
@@ -205,7 +242,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string) => {
     try {
-      await AuthService.resetPassword(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: Platform.OS === 'web' 
+          ? `${window.location.origin}/auth/reset-password`
+          : 'flirtshaala://auth/reset-password',
+      });
+      if (error) throw error;
     } catch (error) {
       console.error('Reset password error:', error);
       throw error;

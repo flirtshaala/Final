@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/services/auth';
+import { supabase } from '@/services/supabase';
+import { storageService } from '@/services/storage';
 
 interface UsageStats {
   dailyReplies: number;
@@ -40,16 +41,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (user) {
       loadUsageStats();
     } else {
-      // Reset stats for non-authenticated users
-      setUsageStats({
-        dailyReplies: 0,
-        adFreeReplies: 0,
-        adReplies: 0,
-        totalActions: 0,
-        lastResetDate: new Date().toDateString(),
-      });
+      // Load guest usage stats from local storage
+      loadGuestUsageStats();
     }
-  }, [user]);
+  }, [user, userProfile]);
 
   const loadUsageStats = async () => {
     if (!user) return;
@@ -71,53 +66,73 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateUsageStats = async (type: 'reply' | 'action', watchedAd: boolean = false) => {
-    if (!user) return;
-    
+  const loadGuestUsageStats = async () => {
     try {
-      if (type === 'reply') {
-        // Increment usage count in database
-        const { error } = await supabase
-          .from('users')
-          .update({ 
-            usage_count: supabase.sql`usage_count + 1`,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id);
+      const userData = await storageService.getUserData();
+      setUsageStats(userData.usageStats);
+    } catch (error) {
+      console.error('Error loading guest usage stats:', error);
+    }
+  };
 
-        if (error) throw error;
-        
-        // Update local stats
-        setUsageStats(prev => ({
-          ...prev,
-          dailyReplies: prev.dailyReplies + 1,
-          adFreeReplies: isPremium && prev.adFreeReplies < 30 ? prev.adFreeReplies + 1 : prev.adFreeReplies,
-          adReplies: watchedAd ? prev.adReplies + 1 : prev.adReplies,
-          totalActions: prev.totalActions + 1,
-        }));
+  const updateUsageStats = async (type: 'reply' | 'action', watchedAd: boolean = false) => {
+    try {
+      if (user) {
+        // Update database for authenticated users
+        if (type === 'reply') {
+          const { error } = await supabase
+            .from('users')
+            .update({ 
+              usage_count: (userProfile?.usage_count || 0) + 1,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', user.id);
+
+          if (error) {
+            console.error('Error updating usage in database:', error);
+          }
+        }
+      } else {
+        // Update local storage for guest users
+        await storageService.updateUsageStats(type, watchedAd);
+        await loadGuestUsageStats();
+        return;
       }
+      
+      // Update local stats
+      setUsageStats(prev => ({
+        ...prev,
+        dailyReplies: type === 'reply' ? prev.dailyReplies + 1 : prev.dailyReplies,
+        adFreeReplies: isPremium && type === 'reply' && prev.adFreeReplies < 30 ? prev.adFreeReplies + 1 : prev.adFreeReplies,
+        adReplies: type === 'reply' && watchedAd ? prev.adReplies + 1 : prev.adReplies,
+        totalActions: prev.totalActions + 1,
+      }));
     } catch (error) {
       console.error('Error updating usage stats:', error);
     }
   };
 
   const resetDailyUsage = async () => {
-    setUsageStats({
+    const newStats = {
       dailyReplies: 0,
       adFreeReplies: 0,
       adReplies: 0,
       totalActions: 0,
       lastResetDate: new Date().toDateString(),
-    });
+    };
+    
+    setUsageStats(newStats);
+    
+    if (!user) {
+      await storageService.resetDailyUsage();
+    }
   };
 
   const canUseService = () => {
     if (!user) {
-      return { 
-        canUse: false, 
-        needsAd: false, 
-        reason: 'Please sign in to use FlirtShaala' 
-      };
+      // For guest users, use local storage service
+      const userData = storageService.getUserData();
+      return storageService.canUseService(usageStats, false);
     }
 
     if (isPremium) {

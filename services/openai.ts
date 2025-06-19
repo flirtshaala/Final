@@ -54,17 +54,23 @@ class OpenAIService {
         flirty: [
           "Hey there! 😊 That's such a sweet message!",
           "Aww, you're making me blush! 💕",
-          "You know just what to say to make someone smile! ✨"
+          "You know just what to say to make someone smile! ✨",
+          "That's so thoughtful of you! 😍",
+          "You always know how to make my day better! 💖"
         ],
         witty: [
           "Well, well, well... someone's got game! 😏",
           "That's actually pretty clever! I'm impressed 🤔",
-          "Smooth operator alert! 🚨"
+          "Smooth operator alert! 🚨",
+          "Are you a magician? Because that was smooth! ✨",
+          "I see what you did there... nice move! 😎"
         ],
         savage: [
           "Oh really? That's your best shot? 😤",
           "Bold move, let's see how that works out! 💪",
-          "Someone's feeling confident today! 🔥"
+          "Someone's feeling confident today! 🔥",
+          "Interesting strategy... let's see if it pays off! 😈",
+          "That's one way to get attention! 💯"
         ]
       };
       

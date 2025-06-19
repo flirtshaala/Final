@@ -39,7 +39,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="camera"
+        name="screenshot"
         options={{
           title: 'Screenshot',
           tabBarIcon: ({ size, color }) => (
@@ -48,7 +48,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="results"
+        name="result"
         options={{
           title: 'Results',
           tabBarIcon: ({ size, color }) => (
@@ -57,9 +57,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="account"
         options={{
-          title: 'Profile',
+          title: 'Account',
           tabBarIcon: ({ size, color }) => (
             <User size={size} color={color} />
           ),

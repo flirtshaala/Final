@@ -4,9 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { supabase } from '@/services/supabase';
-import { useAuthStore } from '@/store/authStore';
+import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { UserProvider } from '@/context/UserContext';
 import { adService } from '@/services/ads';
+import { Platform } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,29 +19,11 @@ export default function RootLayout() {
     // Add custom fonts here if needed
   });
 
-  const { setUser, setSession, setLoading } = useAuthStore();
-
   useEffect(() => {
-    // Initialize ads
-    adService.initialize();
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    // Initialize ads only on mobile platforms
+    if (Platform.OS !== 'web') {
+      adService.initialize().catch(console.error);
+    }
   }, []);
 
   useEffect(() => {
@@ -53,13 +37,20 @@ export default function RootLayout() {
   }
 
   return (
-    <>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </>
+    <AuthProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="auth" />
+            <Stack.Screen name="premium" />
+            <Stack.Screen name="settings" />
+            <Stack.Screen name="profile" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </UserProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

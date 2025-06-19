@@ -41,29 +41,43 @@ class StorageService {
   }
 
   private async setItem(key: string, value: string): Promise<void> {
-    const storage = await this.getStorage();
-    if (Platform.OS === 'web') {
-      (storage as Storage).setItem(key, value);
-    } else {
-      await (storage as typeof AsyncStorage).setItem(key, value);
+    try {
+      const storage = await this.getStorage();
+      if (Platform.OS === 'web') {
+        (storage as Storage).setItem(key, value);
+      } else {
+        await (storage as typeof AsyncStorage).setItem(key, value);
+      }
+    } catch (error) {
+      console.error('Error setting storage item:', error);
     }
   }
 
   private async getItem(key: string): Promise<string | null> {
-    const storage = await this.getStorage();
-    if (Platform.OS === 'web') {
-      return (storage as Storage).getItem(key);
-    } else {
-      return await (storage as typeof AsyncStorage).getItem(key);
+    try {
+      const storage = await this.getStorage();
+      if (Platform.OS === 'web') {
+        return (storage as Storage).getItem(key);
+      } else {
+        return await (storage as typeof AsyncStorage).getItem(key);
+      }
+    } catch (error) {
+      console.error('Error getting storage item:', error);
+      return null;
     }
   }
 
   private shouldResetUsage(lastResetDate: string): boolean {
-    const today = new Date();
-    const lastReset = new Date(lastResetDate);
-    
-    // Reset if it's a new day (after midnight)
-    return today.toDateString() !== lastReset.toDateString();
+    try {
+      const today = new Date();
+      const lastReset = new Date(lastResetDate);
+      
+      // Reset if it's a new day (after midnight)
+      return today.toDateString() !== lastReset.toDateString();
+    } catch (error) {
+      console.error('Error checking reset date:', error);
+      return true; // Reset on error to be safe
+    }
   }
 
   async getUserData(): Promise<UserData> {
@@ -74,6 +88,15 @@ class StorageService {
         const parsed = JSON.parse(userData);
         
         // Migrate old data structure if needed
+        if (!parsed.usageStats) {
+          parsed.usageStats = {
+            dailyReplies: 0,
+            adFreeReplies: 0,
+            adReplies: 0,
+            totalActions: 0,
+            lastResetDate: new Date().toDateString(),
+          };
+        }
         if (!parsed.usageStats.adReplies) {
           parsed.usageStats.adReplies = 0;
         }

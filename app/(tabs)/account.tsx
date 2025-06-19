@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import BannerAd from '@/components/BannerAd';
-import { User, Crown, ChartBar as BarChart3, Star, Settings, LogOut, CreditCard as Edit } from 'lucide-react-native';
+import { User, Crown, BarChart3, Star, Settings, LogOut, Edit, Moon, Sun } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -59,22 +59,10 @@ export default function AccountTab() {
   const getUserDisplayName = () => {
     if (!user) return 'Guest User';
     
-    // Priority: userProfile.name > user metadata name > email username
-    if (userProfile?.name) {
-      return userProfile.name;
-    }
-    
-    if (user.user_metadata?.full_name) {
-      return user.user_metadata.full_name;
-    }
-    
-    if (user.user_metadata?.name) {
-      return user.user_metadata.name;
-    }
-    
-    if (user.email) {
-      return user.email.split('@')[0];
-    }
+    if (userProfile?.name) return userProfile.name;
+    if (user.user_metadata?.full_name) return user.user_metadata.full_name;
+    if (user.user_metadata?.name) return user.user_metadata.name;
+    if (user.email) return user.email.split('@')[0];
     
     return 'User';
   };
@@ -82,23 +70,13 @@ export default function AccountTab() {
   // Get user status
   const getUserStatus = () => {
     if (!user) return 'Not signed in';
-    
-    if (userProfile?.plan_type === 'premium' || isPremium) {
-      return 'Premium User';
-    }
-    
-    return 'Free User';
+    return (userProfile?.plan_type === 'premium' || isPremium) ? 'Premium User' : 'Free User';
   };
 
   // Get status color
   const getStatusColor = () => {
     if (!user) return colors.textSecondary;
-    
-    if (userProfile?.plan_type === 'premium' || isPremium) {
-      return '#FFD700'; // Gold for premium
-    }
-    
-    return '#10B981'; // Green for free users
+    return (userProfile?.plan_type === 'premium' || isPremium) ? '#FFD700' : '#10B981';
   };
 
   // Show loading animation when signing out
@@ -126,7 +104,7 @@ export default function AccountTab() {
           {(userProfile?.plan_type === 'premium' || isPremium) && (
             <View style={styles.premiumBadge}>
               <Crown size={16} color="#FFD700" />
-              <Text style={[styles.premiumText]}>Premium</Text>
+              <Text style={styles.premiumText}>Premium</Text>
             </View>
           )}
         </View>
@@ -171,7 +149,7 @@ export default function AccountTab() {
                   onPress={handleUpgradeToPremium}
                 >
                   <Crown size={16} color="white" />
-                  <Text style={[styles.upgradeButtonText]}>Upgrade</Text>
+                  <Text style={styles.upgradeButtonText}>Upgrade</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -180,7 +158,7 @@ export default function AccountTab() {
               style={styles.signInButton}
               onPress={handleSignIn}
             >
-              <Text style={[styles.signInButtonText]}>Sign In</Text>
+              <Text style={styles.signInButtonText}>Sign In</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -188,69 +166,29 @@ export default function AccountTab() {
         {/* Theme Toggle */}
         <View style={[styles.themeCard, { backgroundColor: colors.cardBackground }]}>
           <View style={styles.themeInfo}>
-            <Text style={[styles.themeTitle, { color: colors.text }]}>Dark Mode</Text>
+            <View style={styles.themeIconContainer}>
+              {isDarkMode ? (
+                <Moon size={20} color={colors.text} />
+              ) : (
+                <Sun size={20} color={colors.text} />
+              )}
+              <Text style={[styles.themeTitle, { color: colors.text }]}>Dark Mode</Text>
+            </View>
             <Text style={[styles.themeDescription, { color: colors.textSecondary }]}>
               Switch between light and dark themes
             </Text>
           </View>
-          <TouchableOpacity
-            style={[styles.themeToggle, { backgroundColor: isDarkMode ? '#FF6B7A' : colors.border }]}
-            onPress={toggleDarkMode}
-          >
-            <View style={[styles.themeToggleThumb, { 
-              backgroundColor: 'white',
-              transform: [{ translateX: isDarkMode ? 20 : 0 }]
-            }]} />
-          </TouchableOpacity>
+          <Switch
+            value={isDarkMode}
+            onValueChange={toggleDarkMode}
+            trackColor={{ false: colors.border, true: '#FF6B7A' }}
+            thumbColor="white"
+            style={Platform.select({
+              web: { transform: [{ scale: 0.8 }] },
+              default: {},
+            })}
+          />
         </View>
-
-        {/* Account Status Card */}
-        {user && (
-          <View style={[styles.statusCard, { backgroundColor: colors.cardBackground }]}>
-            <View style={styles.statusHeader}>
-              <Text style={[styles.statusTitle, { color: colors.text }]}>
-                Account Status
-              </Text>
-              <View style={[
-                styles.statusBadge,
-                { backgroundColor: userProfile?.plan_type === 'premium' || isPremium ? '#FFD700' : '#10B981' }
-              ]}>
-                <Text style={[styles.statusBadgeText]}>
-                  {userProfile?.plan_type === 'premium' || isPremium ? 'PREMIUM' : 'FREE'}
-                </Text>
-              </View>
-            </View>
-            
-            <View style={styles.statusDetails}>
-              <View style={styles.statusItem}>
-                <Text style={[styles.statusLabel, { color: colors.textSecondary }]}>
-                  Member since
-                </Text>
-                <Text style={[styles.statusValue, { color: colors.text }]}>
-                  {userProfile?.created_at ? new Date(userProfile.created_at).toLocaleDateString() : 'Recently'}
-                </Text>
-              </View>
-              
-              <View style={styles.statusItem}>
-                <Text style={[styles.statusLabel, { color: colors.textSecondary }]}>
-                  Total responses
-                </Text>
-                <Text style={[styles.statusValue, { color: colors.text }]}>
-                  {userProfile?.usage_count || 0}
-                </Text>
-              </View>
-              
-              <View style={styles.statusItem}>
-                <Text style={[styles.statusLabel, { color: colors.textSecondary }]}>
-                  Plan benefits
-                </Text>
-                <Text style={[styles.statusValue, { color: colors.text }]}>
-                  {userProfile?.plan_type === 'premium' || isPremium ? 'Unlimited + Ad-free' : '50 daily replies'}
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
 
         {/* Usage Statistics */}
         <View style={[styles.statsCard, { backgroundColor: colors.cardBackground }]}>
@@ -266,29 +204,29 @@ export default function AccountTab() {
               {isPremium ? (
                 <>
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>{userProfile?.usage_count || 0}</Text>
+                    <Text style={styles.statNumber}>{userProfile?.usage_count || 0}</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Usage</Text>
                   </View>
                   
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>∞</Text>
+                    <Text style={styles.statNumber}>∞</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Daily Limit</Text>
                   </View>
                   
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>Premium</Text>
+                    <Text style={styles.statNumber}>Premium</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Plan</Text>
                   </View>
                   
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>✓</Text>
+                    <Text style={styles.statNumber}>✓</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Ad-free</Text>
                   </View>
                 </>
               ) : (
                 <>
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>
+                    <Text style={styles.statNumber}>
                       {userProfile?.usage_count || 0}
                     </Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
@@ -297,17 +235,17 @@ export default function AccountTab() {
                   </View>
                   
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>50</Text>
+                    <Text style={styles.statNumber}>50</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Daily Limit</Text>
                   </View>
                   
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>Free</Text>
+                    <Text style={styles.statNumber}>Free</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Plan</Text>
                   </View>
                   
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-                    <Text style={[styles.statNumber]}>Ads</Text>
+                    <Text style={styles.statNumber}>Ads</Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>With Ads</Text>
                   </View>
                 </>
@@ -322,16 +260,10 @@ export default function AccountTab() {
                 style={styles.signInPromptButton}
                 onPress={handleSignIn}
               >
-                <Text style={[styles.signInPromptButtonText]}>Sign In Now</Text>
+                <Text style={styles.signInPromptButtonText}>Sign In Now</Text>
               </TouchableOpacity>
             </View>
           )}
-          
-          <View style={[styles.resetInfo, { backgroundColor: isDarkMode ? '#2D5016' : '#F0FDF4', borderLeftColor: '#10B981' }]}>
-            <Text style={[styles.resetInfoText, { color: isDarkMode ? '#68D391' : '#059669' }]}>
-              {user ? 'Usage tracked across all your devices' : 'Sign in to track usage across devices'}
-            </Text>
-          </View>
         </View>
 
         {/* Premium Features */}
@@ -342,7 +274,7 @@ export default function AccountTab() {
               <Text style={[styles.premiumTitle, { color: colors.text }]}>Upgrade to Premium</Text>
             </View>
             
-            <Text style={[styles.premiumPrice]}>₹299/month</Text>
+            <Text style={styles.premiumPrice}>₹299/month</Text>
             
             <View style={styles.featuresList}>
               <View style={styles.featureItem}>
@@ -368,7 +300,7 @@ export default function AccountTab() {
               onPress={handleUpgradeToPremium}
             >
               <Crown size={20} color="white" />
-              <Text style={[styles.premiumUpgradeText]}>Upgrade Now</Text>
+              <Text style={styles.premiumUpgradeText}>Upgrade Now</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -469,6 +401,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   userInfo: {
     flexDirection: 'row',
@@ -550,76 +494,53 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   themeInfo: {
     flex: 1,
   },
+  themeIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
   themeTitle: {
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 4,
+    marginLeft: 12,
   },
   themeDescription: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
-  },
-  themeToggle: {
-    width: 50,
-    height: 30,
-    borderRadius: 15,
-    padding: 2,
-    justifyContent: 'center',
-  },
-  themeToggleThumb: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-  },
-  statusCard: {
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 20,
-  },
-  statusHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  statusTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-  },
-  statusBadge: {
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  statusBadgeText: {
-    color: 'white',
-    fontSize: 12,
-    fontFamily: 'Poppins-SemiBold',
-  },
-  statusDetails: {
-    gap: 12,
-  },
-  statusItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statusLabel: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-  },
-  statusValue: {
-    fontSize: 14,
-    fontFamily: 'Poppins-SemiBold',
+    marginLeft: 32,
   },
   statsCard: {
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   statsHeader: {
     flexDirection: 'row',
@@ -677,22 +598,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Poppins-SemiBold',
   },
-  resetInfo: {
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 3,
-  },
-  resetInfoText: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-    textAlign: 'center',
-  },
   premiumCard: {
     borderRadius: 20,
     padding: 24,
     marginBottom: 20,
     borderWidth: 2,
     borderColor: '#FFD700',
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 12px rgba(255, 215, 0, 0.3)',
+      },
+      default: {
+        shadowColor: '#FFD700',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 8,
+      },
+    }),
   },
   premiumHeader: {
     flexDirection: 'row',
@@ -730,6 +653,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(255, 215, 0, 0.3)',
+      },
+      default: {
+        shadowColor: '#FFD700',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   premiumUpgradeText: {
     color: 'white',
@@ -741,6 +676,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
     marginBottom: 20,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   actionItem: {
     flexDirection: 'row',
@@ -756,6 +703,18 @@ const styles = StyleSheet.create({
   appInfoCard: {
     borderRadius: 20,
     padding: 20,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   appInfoTitle: {
     fontSize: 18,

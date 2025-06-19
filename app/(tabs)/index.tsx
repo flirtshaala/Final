@@ -216,11 +216,11 @@ export default function ChatTab() {
               <Text style={[styles.usageTitle, { color: colors.text }]}>Today's Usage</Text>
               <View style={styles.usageStats}>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber]}>{usageStats.adReplies}/50</Text>
+                  <Text style={styles.usageNumber}>{usageStats.adReplies}/50</Text>
                   <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Replies</Text>
                 </View>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber]}>{50 - usageStats.dailyReplies}</Text>
+                  <Text style={styles.usageNumber}>{50 - usageStats.dailyReplies}</Text>
                   <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Remaining</Text>
                 </View>
               </View>
@@ -243,11 +243,11 @@ export default function ChatTab() {
               <Text style={[styles.usageTitle, { color: colors.text }]}>Premium Usage Today</Text>
               <View style={styles.usageStats}>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber]}>{usageStats.adFreeReplies}/30</Text>
+                  <Text style={styles.usageNumber}>{usageStats.adFreeReplies}/30</Text>
                   <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>Ad-free</Text>
                 </View>
                 <View style={styles.usageStat}>
-                  <Text style={[styles.usageNumber]}>{usageStats.adReplies}/50</Text>
+                  <Text style={styles.usageNumber}>{usageStats.adReplies}/50</Text>
                   <Text style={[styles.usageLabel, { color: colors.textSecondary }]}>With ads</Text>
                 </View>
               </View>
@@ -270,7 +270,7 @@ export default function ChatTab() {
                     onPress={handleGetPickupLine}
                     disabled={pickupLoading}
                   >
-                    <Text style={[styles.newPickupText]}>Get Another</Text>
+                    <Text style={styles.newPickupText}>Get Another</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -284,7 +284,7 @@ export default function ChatTab() {
                   ) : (
                     <>
                       <Sparkles size={16} color="white" />
-                      <Text style={[styles.pickupButtonText]}>Get Pickup Line</Text>
+                      <Text style={styles.pickupButtonText}>Get Pickup Line</Text>
                     </>
                   )}
                 </TouchableOpacity>
@@ -353,7 +353,7 @@ export default function ChatTab() {
               ) : (
                 <>
                   <Send size={20} color="white" />
-                  <Text style={[styles.generateButtonText]}>Generate Response</Text>
+                  <Text style={styles.generateButtonText}>Generate Response</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -418,6 +418,18 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 2,
     alignItems: 'center',
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(255, 107, 122, 0.2)',
+      },
+      default: {
+        shadowColor: '#FF6B7A',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   signInPromptTitle: {
     fontSize: 20,
@@ -447,6 +459,18 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   usageTitle: {
     fontSize: 16,
@@ -486,6 +510,18 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   pickupHeader: {
     flexDirection: 'row',
@@ -569,6 +605,19 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     minHeight: 120,
     borderWidth: 1,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+        outline: 'none',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   generateButton: {
     backgroundColor: '#FF6B7A',
@@ -578,9 +627,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(255, 107, 122, 0.3)',
+      },
+      default: {
+        shadowColor: '#FF6B7A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   generateButtonDisabled: {
     backgroundColor: '#D1D5DB',
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowOpacity: 0.1,
+      },
+    }),
   },
   generateButtonText: {
     color: 'white',

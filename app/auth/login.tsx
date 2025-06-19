@@ -6,11 +6,14 @@ import {
   TextInput, 
   TouchableOpacity, 
   Alert, 
-  ScrollView 
+  ScrollView,
+  Platform 
 } from 'react-native';
 import { router } from 'expo-router';
+import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import { useAuth } from '@/context/AuthContext';
-import { Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import { useTheme } from '@/context/ThemeContext';
+import { Heart, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -18,6 +21,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { colors } = useTheme();
 
   const handleEmailLogin = async () => {
     if (!email || !password) {
@@ -49,109 +53,141 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Heart size={48} color="#FF6B7A" fill="#FF6B7A" />
-          <Text style={styles.appName}>FlirtShaala</Text>
-        </View>
-        <Text style={styles.subtitle}>Welcome back! Sign in to continue</Text>
-      </View>
+    <ThemedGradientBackground style={styles.container}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
+          onPress={() => router.back()}
+        >
+          <ArrowLeft size={24} color={colors.text} />
+        </TouchableOpacity>
 
-      {/* Google Sign In Button */}
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleLogin}
-        disabled={loading}
-      >
-        <View style={styles.googleIcon}>
-          <Text style={styles.googleIconText}>G</Text>
-        </View>
-        <Text style={styles.googleButtonText}>Continue with Google</Text>
-      </TouchableOpacity>
-
-      {/* Divider */}
-      <View style={styles.dividerContainer}>
-        <View style={styles.divider} />
-        <Text style={styles.dividerText}>or</Text>
-        <View style={styles.divider} />
-      </View>
-
-      {/* Email/Password Form */}
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <Mail size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email address"
-            placeholderTextColor="#999"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-          />
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Heart size={48} color="#FF6B7A" fill="#FF6B7A" />
+            <Text style={[styles.appName, { color: colors.text }]}>FlirtShaala</Text>
+          </View>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Welcome back! Sign in to continue</Text>
         </View>
 
-        <View style={styles.inputContainer}>
-          <Lock size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#999"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-            autoComplete="password"
-          />
+        {/* Google Sign In Button */}
+        <TouchableOpacity
+          style={[styles.googleButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          onPress={handleGoogleLogin}
+          disabled={loading}
+        >
+          <View style={styles.googleIcon}>
+            <Text style={styles.googleIconText}>G</Text>
+          </View>
+          <Text style={[styles.googleButtonText, { color: colors.text }]}>Continue with Google</Text>
+        </TouchableOpacity>
+
+        {/* Divider */}
+        <View style={styles.dividerContainer}>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <Text style={[styles.dividerText, { color: colors.textSecondary }]}>or</Text>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+        </View>
+
+        {/* Email/Password Form */}
+        <View style={styles.form}>
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Mail size={20} color={colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Email address"
+              placeholderTextColor={colors.textSecondary}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+          </View>
+
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Password"
+              placeholderTextColor={colors.textSecondary}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              autoComplete="password"
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff size={20} color={colors.textSecondary} />
+              ) : (
+                <Eye size={20} color={colors.textSecondary} />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity onPress={() => router.push('/auth/forgot-password')}>
+            <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
-            style={styles.eyeButton}
-            onPress={() => setShowPassword(!showPassword)}
+            style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+            onPress={handleEmailLogin}
+            disabled={loading}
           >
-            {showPassword ? (
-              <EyeOff size={20} color="#666" />
-            ) : (
-              <Eye size={20} color="#666" />
-            )}
+            <Text style={styles.loginButtonText}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => router.push('/auth/forgot-password')}>
-          <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-          onPress={handleEmailLogin}
-          disabled={loading}
-        >
-          <Text style={styles.loginButtonText}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Sign Up Link */}
-      <View style={styles.signUpContainer}>
-        <Text style={styles.signUpText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => router.push('/auth/signup')}>
-          <Text style={styles.signUpLink}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Sign Up Link */}
+        <View style={styles.signUpContainer}>
+          <Text style={[styles.signUpText, { color: colors.textSecondary }]}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => router.push('/auth/signup')}>
+            <Text style={styles.signUpLink}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </ThemedGradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   content: {
+    flex: 1,
+  },
+  contentContainer: {
     flexGrow: 1,
     padding: 24,
     paddingTop: 60,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 32,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   header: {
     alignItems: 'center',
@@ -163,34 +199,35 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#2d3748',
+    fontFamily: 'Poppins-Bold',
     marginTop: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#718096',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 20,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   googleIcon: {
     width: 24,
@@ -204,12 +241,11 @@ const styles = StyleSheet.create({
   googleIconText: {
     color: 'white',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
   },
   googleButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#2d3748',
+    fontFamily: 'Poppins-SemiBold',
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -219,11 +255,10 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e2e8f0',
   },
   dividerText: {
     fontSize: 14,
-    color: '#718096',
+    fontFamily: 'Poppins-Regular',
     marginHorizontal: 16,
   },
   form: {
@@ -232,21 +267,23 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 4,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   inputIcon: {
     marginRight: 12,
@@ -254,8 +291,13 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#2d3748',
+    fontFamily: 'Poppins-Regular',
     paddingVertical: 16,
+    ...Platform.select({
+      web: {
+        outline: 'none',
+      },
+    }),
   },
   eyeButton: {
     padding: 4,
@@ -265,21 +307,25 @@ const styles = StyleSheet.create({
     color: '#FF6B7A',
     textAlign: 'right',
     marginBottom: 24,
-    fontWeight: '500',
+    fontFamily: 'Poppins-Medium',
   },
   loginButton: {
     backgroundColor: '#FF6B7A',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#FF6B7A',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(255, 107, 122, 0.3)',
+      },
+      default: {
+        shadowColor: '#FF6B7A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   loginButtonDisabled: {
     opacity: 0.6,
@@ -287,7 +333,7 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
   signUpContainer: {
     flexDirection: 'row',
@@ -296,11 +342,11 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: 14,
-    color: '#718096',
+    fontFamily: 'Poppins-Regular',
   },
   signUpLink: {
     fontSize: 14,
     color: '#FF6B7A',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
 });

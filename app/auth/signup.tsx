@@ -10,8 +10,10 @@ import {
   Platform 
 } from 'react-native';
 import { router } from 'expo-router';
+import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import { useAuth } from '@/context/AuthContext';
-import { Heart, Mail, Lock, User, Eye, EyeOff } from 'lucide-react-native';
+import { useTheme } from '@/context/ThemeContext';
+import { Heart, Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 
 export default function SignUpScreen() {
   const [formData, setFormData] = useState({
@@ -24,6 +26,7 @@ export default function SignUpScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signUpWithEmail, signInWithGoogle } = useAuth();
+  const { colors } = useTheme();
 
   const handleSignUp = async () => {
     const { name, email, password, confirmPassword } = formData;
@@ -75,140 +78,172 @@ export default function SignUpScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Heart size={48} color="#FF6B7A" fill="#FF6B7A" />
-          <Text style={styles.appName}>FlirtShaala</Text>
-        </View>
-        <Text style={styles.subtitle}>Create your account to get started</Text>
-      </View>
-
-      {/* Google Sign Up Button */}
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleSignUp}
-        disabled={loading}
-      >
-        <View style={styles.googleIcon}>
-          <Text style={styles.googleIconText}>G</Text>
-        </View>
-        <Text style={styles.googleButtonText}>Sign up with Google</Text>
-      </TouchableOpacity>
-
-      {/* Divider */}
-      <View style={styles.dividerContainer}>
-        <View style={styles.divider} />
-        <Text style={styles.dividerText}>or</Text>
-        <View style={styles.divider} />
-      </View>
-
-      {/* Sign Up Form */}
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <User size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Full name"
-            placeholderTextColor="#999"
-            value={formData.name}
-            onChangeText={(value) => updateFormData('name', value)}
-            autoComplete="name"
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Mail size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email address"
-            placeholderTextColor="#999"
-            value={formData.email}
-            onChangeText={(value) => updateFormData('email', value)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Lock size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#999"
-            value={formData.password}
-            onChangeText={(value) => updateFormData('password', value)}
-            secureTextEntry={!showPassword}
-            autoComplete="new-password"
-          />
-          <TouchableOpacity
-            style={styles.eyeButton}
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeOff size={20} color="#666" />
-            ) : (
-              <Eye size={20} color="#666" />
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Lock size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm password"
-            placeholderTextColor="#999"
-            value={formData.confirmPassword}
-            onChangeText={(value) => updateFormData('confirmPassword', value)}
-            secureTextEntry={!showConfirmPassword}
-            autoComplete="new-password"
-          />
-          <TouchableOpacity
-            style={styles.eyeButton}
-            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? (
-              <EyeOff size={20} color="#666" />
-            ) : (
-              <Eye size={20} color="#666" />
-            )}
-          </TouchableOpacity>
-        </View>
-
+    <ThemedGradientBackground style={styles.container}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        {/* Back Button */}
         <TouchableOpacity
-          style={[styles.signUpButton, loading && styles.signUpButtonDisabled]}
-          onPress={handleSignUp}
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
+          onPress={() => router.back()}
+        >
+          <ArrowLeft size={24} color={colors.text} />
+        </TouchableOpacity>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Heart size={48} color="#FF6B7A" fill="#FF6B7A" />
+            <Text style={[styles.appName, { color: colors.text }]}>FlirtShaala</Text>
+          </View>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Create your account to get started</Text>
+        </View>
+
+        {/* Google Sign Up Button */}
+        <TouchableOpacity
+          style={[styles.googleButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          onPress={handleGoogleSignUp}
           disabled={loading}
         >
-          <Text style={styles.signUpButtonText}>
-            {loading ? 'Creating account...' : 'Create Account'}
-          </Text>
+          <View style={styles.googleIcon}>
+            <Text style={styles.googleIconText}>G</Text>
+          </View>
+          <Text style={[styles.googleButtonText, { color: colors.text }]}>Sign up with Google</Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Sign In Link */}
-      <View style={styles.signInContainer}>
-        <Text style={styles.signInText}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => router.push('/auth/login')}>
-          <Text style={styles.signInLink}>Sign In</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Divider */}
+        <View style={styles.dividerContainer}>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <Text style={[styles.dividerText, { color: colors.textSecondary }]}>or</Text>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+        </View>
+
+        {/* Sign Up Form */}
+        <View style={styles.form}>
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <User size={20} color={colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Full name"
+              placeholderTextColor={colors.textSecondary}
+              value={formData.name}
+              onChangeText={(value) => updateFormData('name', value)}
+              autoComplete="name"
+            />
+          </View>
+
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Mail size={20} color={colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Email address"
+              placeholderTextColor={colors.textSecondary}
+              value={formData.email}
+              onChangeText={(value) => updateFormData('email', value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+          </View>
+
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Password"
+              placeholderTextColor={colors.textSecondary}
+              value={formData.password}
+              onChangeText={(value) => updateFormData('password', value)}
+              secureTextEntry={!showPassword}
+              autoComplete="new-password"
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff size={20} color={colors.textSecondary} />
+              ) : (
+                <Eye size={20} color={colors.textSecondary} />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Confirm password"
+              placeholderTextColor={colors.textSecondary}
+              value={formData.confirmPassword}
+              onChangeText={(value) => updateFormData('confirmPassword', value)}
+              secureTextEntry={!showConfirmPassword}
+              autoComplete="new-password"
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? (
+                <EyeOff size={20} color={colors.textSecondary} />
+              ) : (
+                <Eye size={20} color={colors.textSecondary} />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.signUpButton, loading && styles.signUpButtonDisabled]}
+            onPress={handleSignUp}
+            disabled={loading}
+          >
+            <Text style={styles.signUpButtonText}>
+              {loading ? 'Creating account...' : 'Create Account'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Sign In Link */}
+        <View style={styles.signInContainer}>
+          <Text style={[styles.signInText, { color: colors.textSecondary }]}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => router.push('/auth/login')}>
+            <Text style={styles.signInLink}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </ThemedGradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   content: {
+    flex: 1,
+  },
+  contentContainer: {
     flexGrow: 1,
     padding: 24,
     paddingTop: 60,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 32,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   header: {
     alignItems: 'center',
@@ -220,34 +255,35 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#2d3748',
+    fontFamily: 'Poppins-Bold',
     marginTop: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#718096',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 20,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   googleIcon: {
     width: 24,
@@ -261,12 +297,11 @@ const styles = StyleSheet.create({
   googleIconText: {
     color: 'white',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
   },
   googleButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#2d3748',
+    fontFamily: 'Poppins-SemiBold',
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -276,11 +311,10 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e2e8f0',
   },
   dividerText: {
     fontSize: 14,
-    color: '#718096',
+    fontFamily: 'Poppins-Regular',
     marginHorizontal: 16,
   },
   form: {
@@ -289,21 +323,23 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 4,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   inputIcon: {
     marginRight: 12,
@@ -311,8 +347,13 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#2d3748',
+    fontFamily: 'Poppins-Regular',
     paddingVertical: 16,
+    ...Platform.select({
+      web: {
+        outline: 'none',
+      },
+    }),
   },
   eyeButton: {
     padding: 4,
@@ -323,14 +364,18 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#FF6B7A',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(255, 107, 122, 0.3)',
+      },
+      default: {
+        shadowColor: '#FF6B7A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   signUpButtonDisabled: {
     opacity: 0.6,
@@ -338,7 +383,7 @@ const styles = StyleSheet.create({
   signUpButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
   signInContainer: {
     flexDirection: 'row',
@@ -347,11 +392,11 @@ const styles = StyleSheet.create({
   },
   signInText: {
     fontSize: 14,
-    color: '#718096',
+    fontFamily: 'Poppins-Regular',
   },
   signInLink: {
     fontSize: 14,
     color: '#FF6B7A',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
 });

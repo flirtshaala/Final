@@ -1,10 +1,9 @@
 import { Tabs } from 'expo-router';
-import { User, Camera, MessageCircle, Clock } from 'lucide-react-native';
-import { Platform } from 'react-native';
+import { User, Camera, MessageCircle, History } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function TabLayout() {
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <Tabs
@@ -12,41 +11,26 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: colors.surface,
-          borderTopWidth: 0,
-          height: 80,
-          paddingBottom: 20,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+          paddingBottom: 8,
           paddingTop: 8,
-          ...Platform.select({
-            web: {
-              boxShadow: isDarkMode 
-                ? '0px -4px 8px rgba(255, 255, 255, 0.05)' 
-                : '0px -4px 8px rgba(0, 0, 0, 0.1)',
-            },
-            default: {
-              elevation: 8,
-              shadowColor: isDarkMode ? '#FFFFFF' : '#000000',
-              shadowOffset: {
-                width: 0,
-                height: -4,
-              },
-              shadowOpacity: isDarkMode ? 0.05 : 0.1,
-              shadowRadius: 8,
-            },
-          }),
+          height: 70,
         },
         tabBarActiveTintColor: '#FF6B7A',
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
           fontSize: 12,
-          fontFamily: 'Poppins-SemiBold',
+          fontFamily: 'Poppins-Medium',
           marginTop: 4,
         },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="account"
         options={{
           title: 'Account',
-          tabBarIcon: ({ size, color }) => (
+          tabBarIcon: ({ color, size }) => (
             <User size={size} color={color} />
           ),
         }}
@@ -55,7 +39,7 @@ export default function TabLayout() {
         name="screenshot"
         options={{
           title: 'Screenshot',
-          tabBarIcon: ({ size, color }) => (
+          tabBarIcon: ({ color, size }) => (
             <Camera size={size} color={color} />
           ),
         }}
@@ -64,7 +48,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Chat',
-          tabBarIcon: ({ size, color }) => (
+          tabBarIcon: ({ color, size }) => (
             <MessageCircle size={size} color={color} />
           ),
         }}
@@ -73,8 +57,8 @@ export default function TabLayout() {
         name="history"
         options={{
           title: 'History',
-          tabBarIcon: ({ size, color }) => (
-            <Clock size={size} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <History size={size} color={color} />
           ),
         }}
       />

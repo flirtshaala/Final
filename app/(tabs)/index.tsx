@@ -608,7 +608,6 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: {
         boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-        outline: 'none',
       },
       default: {
         shadowColor: '#000',

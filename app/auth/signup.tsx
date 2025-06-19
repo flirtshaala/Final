@@ -349,11 +349,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-Regular',
     paddingVertical: 16,
-    ...Platform.select({
-      web: {
-        outline: 'none',
-      },
-    }),
   },
   eyeButton: {
     padding: 4,

@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { BannerAd } from '@/components/BannerAd';
-import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoreHorizontal } from 'lucide-react-native';
+import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
 import { openaiService, ResponseType } from '@/services/openai';
 import { apiService } from '@/services/api';
 import { useUser } from '@/context/UserContext';

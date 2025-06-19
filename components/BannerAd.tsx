@@ -1,71 +1,57 @@
 import React from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
-import { useUser } from '@/context/UserContext';
 
-// Dynamic import for mobile ads
-const BannerAdComponent = React.lazy(async () => {
-  if (Platform.OS === 'web') {
-    // Return a mock component for web
-    return {
-      default: () => (
-        <View style={styles.webPlaceholder}>
-          <Text style={styles.webPlaceholderText}>Ad Space</Text>
-        </View>
-      )
-    };
-  }
+// Platform-specific imports with proper error handling
+let BannerAd: any = null;
+let BannerAdSize: any = null;
+let adService: any = null;
 
+if (Platform.OS !== 'web') {
   try {
-    const { BannerAd, BannerAdSize } = await import('react-native-google-mobile-ads');
-    const { adService } = await import('@/services/ads');
-
-    return {
-      default: () => (
-        <View style={styles.container}>
-          <BannerAd
-            unitId={adService.getBannerAdUnitId()}
-            size={BannerAdSize.BANNER}
-            requestOptions={{
-              requestNonPersonalizedAdsOnly: false,
-            }}
-            onAdLoaded={() => {
-              console.log('Banner ad loaded');
-            }}
-            onAdFailedToLoad={(error) => {
-              console.log('Banner ad failed to load:', error);
-            }}
-          />
-        </View>
-      )
-    };
+    const googleMobileAds = require('react-native-google-mobile-ads');
+    BannerAd = googleMobileAds.BannerAd;
+    BannerAdSize = googleMobileAds.BannerAdSize;
+    adService = require('@/services/ads').adService;
   } catch (error) {
-    console.error('Failed to load BannerAd:', error);
-    return {
-      default: () => (
-        <View style={styles.webPlaceholder}>
-          <Text style={styles.webPlaceholderText}>Ad Space</Text>
-        </View>
-      )
-    };
+    console.warn('Failed to load AdMob components:', error);
   }
-});
+}
 
-export default function BannerAdWrapper() {
-  const { isPremium } = useUser();
+export default function BannerAdComponent() {
+  if (Platform.OS === 'web') {
+    // Show a placeholder for web
+    return (
+      <View style={styles.webPlaceholder}>
+        <Text style={styles.webPlaceholderText}>Ad Space</Text>
+      </View>
+    );
+  }
 
-  // Don't show ads for premium users
-  if (isPremium) {
-    return null;
+  // Return null if AdMob components failed to load
+  if (!BannerAd || !BannerAdSize || !adService) {
+    return (
+      <View style={styles.webPlaceholder}>
+        <Text style={styles.webPlaceholderText}>Ad Loading...</Text>
+      </View>
+    );
   }
 
   return (
-    <React.Suspense fallback={
-      <View style={styles.webPlaceholder}>
-        <Text style={styles.webPlaceholderText}>Loading Ad...</Text>
-      </View>
-    }>
-      <BannerAdComponent />
-    </React.Suspense>
+    <View style={styles.container}>
+      <BannerAd
+        unitId={adService.getBannerAdUnitId()}
+        size={BannerAdSize.BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: false,
+        }}
+        onAdLoaded={() => {
+          console.log('Banner ad loaded');
+        }}
+        onAdFailedToLoad={(error: any) => {
+          console.log('Banner ad failed to load:', error);
+        }}
+      />
+    </View>
   );
 }
 
@@ -91,6 +77,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-
-// Export with a different name to avoid conflicts
-export { BannerAdWrapper as BannerAd };

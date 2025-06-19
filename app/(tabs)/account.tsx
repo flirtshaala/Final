@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform }
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { BannerAd } from '@/components/BannerAd';
+import BannerAd from '@/components/BannerAd';
 import { User, Crown, ChartBar as BarChart3, Star, Settings, LogOut, CreditCard as Edit } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
 import { useAuth } from '@/context/AuthContext';

@@ -423,13 +423,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginTop: 16,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginLeft: 12,
   },
   premiumBadge: {
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
   premiumText: {
     color: '#FFD700',
     fontSize: 12,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 4,
   },
   userCard: {
@@ -488,22 +488,22 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 4,
   },
   userStatus: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 2,
   },
   userEmail: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 2,
   },
   guestDescription: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 2,
     lineHeight: 16,
   },
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   upgradeButtonText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 4,
   },
   signInButton: {
@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
   signInButtonText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   themeCard: {
     borderRadius: 20,
@@ -556,12 +556,12 @@ const styles = StyleSheet.create({
   },
   themeTitle: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 4,
   },
   themeDescription: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   themeToggle: {
     width: 50,
@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
   },
   statusTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   statusBadge: {
     borderRadius: 12,
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
   statusBadgeText: {
     color: 'white',
     fontSize: 12,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   statusDetails: {
     gap: 12,
@@ -610,11 +610,11 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   statusValue: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   statsCard: {
     borderRadius: 20,
@@ -628,7 +628,7 @@ const styles = StyleSheet.create({
   },
   statsTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 12,
   },
   statsGrid: {
@@ -646,12 +646,12 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 24,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     color: '#9B59B6',
   },
   statLabel: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 4,
     textAlign: 'center',
   },
@@ -661,7 +661,7 @@ const styles = StyleSheet.create({
   },
   signInPromptText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
     marginBottom: 16,
     lineHeight: 20,
@@ -675,7 +675,7 @@ const styles = StyleSheet.create({
   signInPromptButtonText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   resetInfo: {
     borderRadius: 8,
@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
   },
   resetInfoText: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
   premiumCard: {
@@ -701,12 +701,12 @@ const styles = StyleSheet.create({
   },
   premiumTitle: {
     fontSize: 20,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginLeft: 12,
   },
   premiumPrice: {
     fontSize: 24,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     color: '#FF6B7A',
     marginBottom: 20,
   },
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginLeft: 12,
   },
   premiumUpgradeButton: {
@@ -734,7 +734,7 @@ const styles = StyleSheet.create({
   premiumUpgradeText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginLeft: 8,
   },
   actionsCard: {
@@ -750,7 +750,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginLeft: 12,
   },
   appInfoCard: {
@@ -759,18 +759,18 @@ const styles = StyleSheet.create({
   },
   appInfoTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 8,
   },
   appInfoText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     lineHeight: 20,
     marginBottom: 12,
   },
   versionText: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   bottomSpacing: {
     height: 100,

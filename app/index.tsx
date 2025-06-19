@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 36,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginTop: 16,
     marginBottom: 8,
   },
   tagline: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
 });

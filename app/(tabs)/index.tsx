@@ -389,13 +389,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginTop: 16,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginLeft: 12,
   },
   signInPromptCard: {
@@ -421,13 +421,13 @@ const styles = StyleSheet.create({
   },
   signInPromptTitle: {
     fontSize: 20,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginBottom: 8,
     textAlign: 'center',
   },
   signInPromptText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 20,
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   signInPromptButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   usageCard: {
     borderRadius: 16,
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   },
   usageTitle: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 12,
   },
   usageStats: {
@@ -462,12 +462,12 @@ const styles = StyleSheet.create({
   },
   usageNumber: {
     fontSize: 20,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     color: '#FF6B7A',
   },
   usageLabel: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 4,
   },
   upgradePrompt: {
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
   },
   upgradePromptText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     textAlign: 'center',
   },
   pickupSection: {
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
   },
   pickupTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 8,
   },
   pickupButton: {
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   pickupButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 8,
   },
   pickupResult: {
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
   },
   pickupText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     lineHeight: 24,
     marginBottom: 12,
   },
@@ -532,14 +532,14 @@ const styles = StyleSheet.create({
   newPickupText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   typeSection: {
     marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 12,
   },
   typeButtons: {
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
   },
   typeButtonText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   inputSection: {
     marginBottom: 24,
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlignVertical: 'top',
     minHeight: 120,
     borderWidth: 1,
@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
   generateButtonText: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginLeft: 8,
   },
   bottomSpacing: {

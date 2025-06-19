@@ -541,13 +541,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginTop: 16,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginLeft: 12,
   },
   emptyState: {
@@ -575,13 +575,13 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 24,
-    fontFamily: 'ProximaNova-Bold',
+    fontFamily: 'Poppins-Bold',
     marginTop: 24,
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
     marginBottom: 32,
   },
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   originalImageContainer: {
     marginBottom: 24,
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 12,
   },
   originalTextCard: {
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
   },
   originalText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     lineHeight: 20,
   },
   responseContainer: {
@@ -640,7 +640,7 @@ const styles = StyleSheet.create({
   responseTypeText: {
     color: 'white',
     fontSize: 12,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     textTransform: 'capitalize',
   },
   responseCard: {
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
   },
   responseText: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     lineHeight: 28,
     marginBottom: 12,
   },
@@ -660,7 +660,7 @@ const styles = StyleSheet.create({
   },
   languageText: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     fontStyle: 'italic',
   },
   actionButtons: {
@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 6,
   },
   historyContainer: {
@@ -694,7 +694,7 @@ const styles = StyleSheet.create({
   },
   historyTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginLeft: 8,
   },
   historyLoadingContainer: {
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
   },
   historyLoadingText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginTop: 16,
   },
   historyItem: {
@@ -724,7 +724,7 @@ const styles = StyleSheet.create({
   },
   historyResponse: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginBottom: 8,
   },
   historyMeta: {
@@ -734,13 +734,13 @@ const styles = StyleSheet.create({
   },
   historyType: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     color: '#FF6B7A',
     textTransform: 'capitalize',
   },
   historyTime: {
     fontSize: 12,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
   },
   historyThumbnail: {
     width: 40,
@@ -766,7 +766,7 @@ const styles = StyleSheet.create({
   },
   loadMoreText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     marginLeft: 8,
   },
   emptyHistoryContainer: {
@@ -775,13 +775,13 @@ const styles = StyleSheet.create({
   },
   emptyHistoryTitle: {
     fontSize: 18,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyHistoryText: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
   newResponseButton: {
@@ -793,7 +793,7 @@ const styles = StyleSheet.create({
   newResponseButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   bottomSpacing: {
     height: 100,

@@ -38,7 +38,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
           fontSize: 12,
-          fontFamily: 'ProximaNova-SemiBold',
+          fontFamily: 'Poppins-SemiBold',
           marginTop: 4,
         },
       }}>

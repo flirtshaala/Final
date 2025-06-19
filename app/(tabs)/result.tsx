@@ -370,7 +370,7 @@ export default function ResultTab() {
           </TouchableOpacity>
           <View style={styles.headerTitle}>
             <Heart size={24} color="#FF6B7A" />
-            <Text style={[styles.title, { color: colors.text, fontFamily: 'ProximaNova-Bold' }]}>Your Perfect Response</Text>
+            <Text style={[styles.title, { color: colors.text, fontFamily: 'Poppins-Bold' }]}>Your Perfect Response</Text>
           </View>
         </View>
 
@@ -380,14 +380,14 @@ export default function ResultTab() {
             {/* Original Content */}
             {imageUri && (
               <View style={styles.originalImageContainer}>
-                <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>Original Screenshot</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Original Screenshot</Text>
                 <Image source={{ uri: imageUri }} style={styles.originalImage} />
               </View>
             )}
 
             {originalText && (
               <View style={styles.originalTextContainer}>
-                <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>Original Chat</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Original Chat</Text>
                 <View style={[styles.originalTextCard, { backgroundColor: colors.cardBackground, ...Platform.select({
                   web: {
                     boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
@@ -403,7 +403,7 @@ export default function ResultTab() {
                     elevation: 4,
                   },
                 }) }]}>
-                  <Text style={[styles.originalText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>{originalText}</Text>
+                  <Text style={[styles.originalText, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>{originalText}</Text>
                 </View>
               </View>
             )}
@@ -411,11 +411,11 @@ export default function ResultTab() {
             {/* Generated Response */}
             <View style={styles.responseContainer}>
               <View style={styles.responseHeader}>
-                <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>
+                <Text style={[styles.sectionTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>
                   {responseType.charAt(0).toUpperCase() + responseType.slice(1)} Response
                 </Text>
                 <View style={styles.responseTypeIndicator}>
-                  <Text style={[styles.responseTypeText, { fontFamily: 'ProximaNova-SemiBold' }]}>{responseType}</Text>
+                  <Text style={[styles.responseTypeText, { fontFamily: 'Poppins-SemiBold' }]}>{responseType}</Text>
                 </View>
               </View>
 
@@ -434,9 +434,9 @@ export default function ResultTab() {
                   elevation: 8,
                 },
               }) }]}>
-                <Text style={[styles.responseText, { color: colors.text, fontFamily: 'ProximaNova-Regular' }]}>{response}</Text>
+                <Text style={[styles.responseText, { color: colors.text, fontFamily: 'Poppins-Regular' }]}>{response}</Text>
                 <View style={styles.languageIndicator}>
-                  <Text style={[styles.languageText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>
+                  <Text style={[styles.languageText, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>
                     Style matched automatically by AI
                   </Text>
                 </View>
@@ -464,7 +464,7 @@ export default function ResultTab() {
                 onPress={copyToClipboard}
               >
                 <Copy size={20} color="#FF6B7A" />
-                <Text style={[styles.actionButtonText, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>Copy</Text>
+                <Text style={[styles.actionButtonText, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Copy</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -486,7 +486,7 @@ export default function ResultTab() {
                 onPress={shareResponse}
               >
                 <Share2 size={20} color="#9B59B6" />
-                <Text style={[styles.actionButtonText, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>Share</Text>
+                <Text style={[styles.actionButtonText, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>Share</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -495,7 +495,7 @@ export default function ResultTab() {
                 disabled={loading}
               >
                 <RefreshCw size={20} color="white" />
-                <Text style={[styles.actionButtonText, { color: 'white', fontFamily: 'ProximaNova-SemiBold' }]}>
+                <Text style={[styles.actionButtonText, { color: 'white', fontFamily: 'Poppins-SemiBold' }]}>
                   Regenerate
                 </Text>
               </TouchableOpacity>
@@ -507,7 +507,7 @@ export default function ResultTab() {
         <View style={styles.historyContainer}>
           <View style={styles.historyHeader}>
             <Clock size={20} color={colors.textSecondary} />
-            <Text style={[styles.historyTitle, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>
+            <Text style={[styles.historyTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>
               {user ? 'Your Response History' : 'Recent Responses'}
             </Text>
           </View>
@@ -515,7 +515,7 @@ export default function ResultTab() {
           {historyLoading ? (
             <View style={styles.historyLoadingContainer}>
               <LoadingSpinner />
-              <Text style={[styles.historyLoadingText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>
+              <Text style={[styles.historyLoadingText, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>
                 Loading your history...
               </Text>
             </View>
@@ -542,12 +542,12 @@ export default function ResultTab() {
                     onPress={() => loadHistoryItem(item)}
                   >
                     <View style={styles.historyTextContent}>
-                      <Text style={[styles.historyResponse, { color: colors.text, fontFamily: 'ProximaNova-Regular' }]} numberOfLines={2}>
+                      <Text style={[styles.historyResponse, { color: colors.text, fontFamily: 'Poppins-Regular' }]} numberOfLines={2}>
                         {item.response}
                       </Text>
                       <View style={styles.historyMeta}>
-                        <Text style={[styles.historyType, { fontFamily: 'ProximaNova-SemiBold' }]}>{item.responseType}</Text>
-                        <Text style={[styles.historyTime, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>
+                        <Text style={[styles.historyType, { fontFamily: 'Poppins-SemiBold' }]}>{item.responseType}</Text>
+                        <Text style={[styles.historyTime, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>
                           {formatTimestamp(isResponseHistory(item) ? item.created_at : item.timestamp)}
                         </Text>
                       </View>
@@ -592,7 +592,7 @@ export default function ResultTab() {
                   ) : (
                     <MoreHorizontal size={20} color={colors.textSecondary} />
                   )}
-                  <Text style={[styles.loadMoreText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>
+                  <Text style={[styles.loadMoreText, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>
                     {loadingMore ? 'Loading...' : 'Load More'}
                   </Text>
                 </TouchableOpacity>
@@ -601,10 +601,10 @@ export default function ResultTab() {
           ) : (
             <View style={styles.emptyHistoryContainer}>
               <Clock size={48} color={colors.border} />
-              <Text style={[styles.emptyHistoryTitle, { color: colors.text, fontFamily: 'ProximaNova-SemiBold' }]}>
+              <Text style={[styles.emptyHistoryTitle, { color: colors.text, fontFamily: 'Poppins-SemiBold' }]}>
                 No History Yet
               </Text>
-              <Text style={[styles.emptyHistoryText, { color: colors.textSecondary, fontFamily: 'ProximaNova-Regular' }]}>
+              <Text style={[styles.emptyHistoryText, { color: colors.textSecondary, fontFamily: 'Poppins-Regular' }]}>
                 Your generated responses will appear here
               </Text>
             </View>
@@ -630,7 +630,7 @@ export default function ResultTab() {
           })]}
           onPress={() => router.push('/(tabs)')}
         >
-          <Text style={[styles.newResponseButtonText, { fontFamily: 'ProximaNova-SemiBold' }]}>Create New Response</Text>
+          <Text style={[styles.newResponseButtonText, { fontFamily: 'Poppins-SemiBold' }]}>Create New Response</Text>
         </TouchableOpacity>
 
         <View style={styles.bottomSpacing} />
@@ -659,13 +659,11 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
     marginTop: 16,
     textAlign: 'center',
   },
   loadingSubtext: {
     fontSize: 14,
-    fontFamily: 'ProximaNova-Regular',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -716,7 +714,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: 'ProximaNova-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   originalImageContainer: {
     marginBottom: 24,

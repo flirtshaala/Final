@@ -4,10 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts } from 'expo-font';
 import {
-  ProximaNova_400Regular,
-  ProximaNova_600SemiBold,
-  ProximaNova_700Bold,
-} from '@expo-google-fonts/proxima-nova';
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
@@ -21,9 +22,10 @@ export default function RootLayout() {
   useFrameworkReady();
 
   const [fontsLoaded, fontError] = useFonts({
-    'ProximaNova-Regular': ProximaNova_400Regular,
-    'ProximaNova-SemiBold': ProximaNova_600SemiBold,
-    'ProximaNova-Bold': ProximaNova_700Bold,
+    'Poppins-Regular': Poppins_400Regular,
+    'Poppins-Medium': Poppins_500Medium,
+    'Poppins-SemiBold': Poppins_600SemiBold,
+    'Poppins-Bold': Poppins_700Bold,
   });
 
   useEffect(() => {

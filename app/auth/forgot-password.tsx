@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView,
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react-native';
+import { Mail, ArrowLeft, CircleCheck as CheckCircle } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 

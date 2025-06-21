@@ -177,12 +177,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           provider: 'google',
           options: {
             redirectTo: `${window.location.origin}/auth/callback`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
           },
         });
         if (error) throw error;
       } else {
-        // For mobile, we'll implement this later
-        throw new Error('Google sign-in not implemented for mobile yet');
+        // For mobile, we'll implement this later with proper deep linking
+        throw new Error('Google sign-in not implemented for mobile yet. Please use email/password authentication.');
       }
     } catch (error) {
       console.error('Google sign in error:', error);

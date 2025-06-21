@@ -45,6 +45,8 @@ export default function RootLayout() {
             <Stack.Screen name="auth/login" />
             <Stack.Screen name="auth/signup" />
             <Stack.Screen name="auth/forgot-password" />
+            <Stack.Screen name="auth/callback" />
+            <Stack.Screen name="auth/reset-password" />
             <Stack.Screen name="premium" />
             <Stack.Screen name="settings" />
             <Stack.Screen name="profile/edit" />

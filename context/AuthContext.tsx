@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/services/supabase';
 import { Platform } from 'react-native';
+import { googleAuthService } from '@/services/googleAuth';
 
 interface UserProfile {
   id: string;
@@ -173,20 +174,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       
       if (Platform.OS === 'web') {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'consent',
-            },
-          },
-        });
-        if (error) throw error;
+        // Use popup-based authentication for web
+        const result = await googleAuthService.signInWithGooglePopup();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Google Sign-In failed');
+        }
+
+        // Session is already set by the popup callback
+        // The auth state change listener will handle the rest
       } else {
-        // For mobile, we'll implement this later with proper deep linking
-        throw new Error('Google sign-in not implemented for mobile yet. Please use email/password authentication.');
+        // For mobile, show a helpful message
+        throw new Error('Google Sign-In is currently only available on web. Please use email/password authentication on mobile devices.');
       }
     } catch (error) {
       console.error('Google sign in error:', error);
@@ -234,6 +233,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setLoading(true);
+      
+      // Cancel any ongoing Google authentication
+      if (Platform.OS === 'web') {
+        googleAuthService.cancelAuthentication();
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {

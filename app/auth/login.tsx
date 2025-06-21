@@ -12,6 +12,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const { colors } = useTheme();
 
@@ -33,23 +34,30 @@ export default function LoginScreen() {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       await signInWithGoogle();
-      router.replace('/(tabs)/account');
+      // Navigation will be handled by auth state change
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message || 'Failed to sign in with Google');
+      Alert.alert('Google Sign-In Failed', error.message || 'Failed to sign in with Google');
     } finally {
-      setLoading(false);
+      setGoogleLoading(false);
     }
   };
 
-  if (loading) {
+  if (loading || googleLoading) {
     return (
       <ThemedGradientBackground>
         <View style={styles.loadingContainer}>
           <LoadingSpinner />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Signing you in...</Text>
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+            {googleLoading ? 'Signing in with Google...' : 'Signing you in...'}
+          </Text>
+          {googleLoading && (
+            <Text style={[styles.loadingSubtext, { color: colors.textSecondary }]}>
+              Please complete authentication in the popup window
+            </Text>
+          )}
         </View>
       </ThemedGradientBackground>
     );
@@ -141,9 +149,18 @@ export default function LoginScreen() {
           <TouchableOpacity
             style={[styles.googleButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={handleGoogleLogin}
+            disabled={googleLoading}
           >
-            <Text style={[styles.googleButtonText, { color: colors.text }]}>Continue with Google</Text>
+            <Text style={[styles.googleButtonText, { color: colors.text }]}>
+              {googleLoading ? 'Signing in...' : 'Continue with Google'}
+            </Text>
           </TouchableOpacity>
+
+          {Platform.OS !== 'web' && (
+            <Text style={[styles.mobileNote, { color: colors.textSecondary }]}>
+              Google Sign-In is currently available on web only. Use email/password on mobile.
+            </Text>
+          )}
 
           {/* Sign Up Link */}
           <View style={styles.signUpContainer}>
@@ -179,6 +196,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-Medium',
     marginTop: 16,
+    textAlign: 'center',
+  },
+  loadingSubtext: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    marginTop: 8,
     textAlign: 'center',
   },
   header: {
@@ -284,11 +307,18 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 1,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   googleButtonText: {
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
+  },
+  mobileNote: {
+    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 16,
   },
   signUpContainer: {
     flexDirection: 'row',

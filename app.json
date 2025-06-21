@@ -17,10 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.flirtshaala.app",
-      "deploymentTarget": "15.1",
-      "config": {
-        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
-      }
+      "deploymentTarget": "15.1"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,10 +31,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE"
-      ],
-      "config": {
-        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713"
-      }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",

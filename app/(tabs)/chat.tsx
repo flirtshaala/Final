@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   Platform,
 } from 'react-native';
-import { MessageCircle, Send, Sparkles } from 'lucide-react-native';
+import { MessageCircle, Send, Sparkles, RefreshCw } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -169,6 +169,10 @@ export default function ChatTab() {
     }
   };
 
+  const handleRegeneratePickupLine = async () => {
+    await handleGetPickupLine();
+  };
+
   // Show loading animation when generating response
   if (loading) {
     return (
@@ -254,7 +258,7 @@ export default function ChatTab() {
             </View>
           )}
 
-          {/* Pickup Line Section - Only for authenticated users */}
+          {/* Break the Ice Section - Only for authenticated users */}
           {user && (
             <View style={[styles.pickupSection, { backgroundColor: colors.cardBackground }]}>
               <View style={styles.pickupHeader}>
@@ -265,13 +269,22 @@ export default function ChatTab() {
               {pickupLine ? (
                 <View style={[styles.pickupResult, { backgroundColor: colors.surfaceSecondary }]}>
                   <Text style={[styles.pickupText, { color: colors.text }]}>{pickupLine}</Text>
-                  <TouchableOpacity
-                    style={styles.newPickupButton}
-                    onPress={handleGetPickupLine}
-                    disabled={pickupLoading}
-                  >
-                    <Text style={styles.newPickupText}>Get Another</Text>
-                  </TouchableOpacity>
+                  <View style={styles.pickupActions}>
+                    <TouchableOpacity
+                      style={styles.newPickupButton}
+                      onPress={handleRegeneratePickupLine}
+                      disabled={pickupLoading}
+                    >
+                      {pickupLoading ? (
+                        <LoadingSpinner />
+                      ) : (
+                        <>
+                          <RefreshCw size={16} color="white" />
+                          <Text style={styles.newPickupText}>Get Another</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ) : (
                 <TouchableOpacity
@@ -558,17 +571,23 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 12,
   },
+  pickupActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
   newPickupButton: {
-    alignSelf: 'flex-start',
     backgroundColor: '#8B5CF6',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   newPickupText: {
     color: 'white',
     fontSize: 14,
     fontFamily: 'Poppins-SemiBold',
+    marginLeft: 4,
   },
   typeSection: {
     marginBottom: 24,

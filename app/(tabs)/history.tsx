@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import BannerAd from '@/components/BannerAd';
-import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
+import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoreHorizontal } from 'lucide-react-native';
 import { openaiService, ResponseType } from '@/services/openai';
 import { apiService } from '@/services/api';
 import { useUser } from '@/context/UserContext';
@@ -314,7 +314,7 @@ export default function HistoryTab() {
           </Text>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.push('/(tabs)')}
+            onPress={() => router.push('/(tabs)/chat')}
           >
             <Text style={styles.backButtonText}>Start Chatting</Text>
           </TouchableOpacity>
@@ -510,7 +510,7 @@ export default function HistoryTab() {
         {/* New Response Button */}
         <TouchableOpacity
           style={styles.newResponseButton}
-          onPress={() => router.push('/(tabs)')}
+          onPress={() => router.push('/(tabs)/chat')}
         >
           <Text style={[styles.newResponseButtonText]}>Create New Response</Text>
         </TouchableOpacity>

@@ -2,18 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Switch, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
-import { 
-  ArrowLeft, 
-  Bell, 
-  Shield, 
-  HelpCircle, 
-  FileText, 
-  Star, 
-  Moon, 
-  Sun,
-  ChevronRight,
-  Trash2
-} from 'lucide-react-native';
+import { ArrowLeft, Bell, Shield, CircleHelp as HelpCircle, FileText, Star, Moon, Sun, ChevronRight, Trash2 } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 

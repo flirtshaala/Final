@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import BannerAd from '@/components/BannerAd';
-import { User, Crown, ChartBar as BarChart3, Star, Settings, LogOut, CreditCard as Edit, Moon, Sun } from 'lucide-react-native';
+import { User, Crown, BarChart3, Star, Settings, LogOut, Edit, Moon, Sun } from 'lucide-react-native';
 import { useUser } from '@/context/UserContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -16,15 +16,24 @@ export default function AccountTab() {
   const { colors, isDarkMode, toggleDarkMode } = useTheme();
 
   const handleUpgradeToPremium = () => {
-    router.push('/premium');
+    Alert.alert(
+      'Coming Soon!',
+      'Premium subscriptions will be available soon. We\'re working on integrating secure payment processing.',
+      [
+        { text: 'Notify Me', onPress: () => {
+          Alert.alert('Thanks!', 'We\'ll notify you when Premium is available.');
+        }},
+        { text: 'OK', style: 'cancel' }
+      ]
+    );
   };
 
   const handleSettings = () => {
-    router.push('/settings');
+    Alert.alert('Settings', 'Settings screen coming soon!');
   };
 
   const handleEditProfile = () => {
-    router.push('/profile/edit');
+    Alert.alert('Edit Profile', 'Profile editing coming soon!');
   };
 
   const handleSignOut = () => {
@@ -52,7 +61,7 @@ export default function AccountTab() {
   };
 
   const handleSignIn = () => {
-    router.push('/auth/login');
+    Alert.alert('Sign In', 'Authentication screens coming soon!');
   };
 
   // Get user display name

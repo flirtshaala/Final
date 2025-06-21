@@ -13,7 +13,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UserProvider } from '@/context/UserContext';
-import { adService } from '@/services/ads';
 import { Platform } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
@@ -27,13 +26,6 @@ export default function RootLayout() {
     'Poppins-SemiBold': Poppins_600SemiBold,
     'Poppins-Bold': Poppins_700Bold,
   });
-
-  useEffect(() => {
-    // Initialize ads only on mobile platforms
-    if (Platform.OS !== 'web') {
-      adService.initialize().catch(console.error);
-    }
-  }, []);
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -51,11 +43,6 @@ export default function RootLayout() {
         <UserProvider>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="auth" />
-            <Stack.Screen name="premium" />
-            <Stack.Screen name="settings" />
-            <Stack.Screen name="profile/edit" />
-            <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
         </UserProvider>

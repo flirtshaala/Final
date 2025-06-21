@@ -1,0 +1,332 @@
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
+import { router } from 'expo-router';
+import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
+import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
+
+export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { colors } = useTheme();
+
+  const handleEmailLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signInWithEmail(email.trim(), password);
+      router.replace('/(tabs)/account');
+    } catch (error: any) {
+      Alert.alert('Login Failed', error.message || 'Failed to sign in');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+      router.replace('/(tabs)/account');
+    } catch (error: any) {
+      Alert.alert('Login Failed', error.message || 'Failed to sign in with Google');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <ThemedGradientBackground>
+        <View style={styles.loadingContainer}>
+          <LoadingSpinner />
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Signing you in...</Text>
+        </View>
+      </ThemedGradientBackground>
+    );
+  }
+
+  return (
+    <ThemedGradientBackground style={styles.container}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
+            onPress={() => router.back()}
+          >
+            <ArrowLeft size={24} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={[styles.title, { color: colors.text }]}>Welcome Back</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Sign in to your FlirtShaala account
+          </Text>
+        </View>
+
+        {/* Login Form */}
+        <View style={[styles.formContainer, { backgroundColor: colors.cardBackground }]}>
+          {/* Email Input */}
+          <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { color: colors.text }]}>Email</Text>
+            <View style={[styles.inputWrapper, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Mail size={20} color={colors.textSecondary} />
+              <TextInput
+                style={[styles.textInput, { color: colors.text }]}
+                placeholder="Enter your email"
+                placeholderTextColor={colors.textSecondary}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+          </View>
+
+          {/* Password Input */}
+          <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { color: colors.text }]}>Password</Text>
+            <View style={[styles.inputWrapper, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Lock size={20} color={colors.textSecondary} />
+              <TextInput
+                style={[styles.textInput, { color: colors.text }]}
+                placeholder="Enter your password"
+                placeholderTextColor={colors.textSecondary}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                {showPassword ? (
+                  <EyeOff size={20} color={colors.textSecondary} />
+                ) : (
+                  <Eye size={20} color={colors.textSecondary} />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Forgot Password */}
+          <TouchableOpacity
+            style={styles.forgotPasswordContainer}
+            onPress={() => router.push('/auth/forgot-password')}
+          >
+            <Text style={[styles.forgotPasswordText, { color: colors.primary }]}>
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
+
+          {/* Login Button */}
+          <TouchableOpacity
+            style={[styles.loginButton, { opacity: (!email.trim() || !password.trim()) ? 0.6 : 1 }]}
+            onPress={handleEmailLogin}
+            disabled={!email.trim() || !password.trim()}
+          >
+            <Text style={styles.loginButtonText}>Sign In</Text>
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={styles.dividerContainer}>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <Text style={[styles.dividerText, { color: colors.textSecondary }]}>or</Text>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          </View>
+
+          {/* Google Login */}
+          <TouchableOpacity
+            style={[styles.googleButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            onPress={handleGoogleLogin}
+          >
+            <Text style={[styles.googleButtonText, { color: colors.text }]}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          {/* Sign Up Link */}
+          <View style={styles.signUpContainer}>
+            <Text style={[styles.signUpText, { color: colors.textSecondary }]}>
+              Don't have an account?{' '}
+            </Text>
+            <TouchableOpacity onPress={() => router.push('/auth/signup')}>
+              <Text style={[styles.signUpLink, { color: colors.primary }]}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </ThemedGradientBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+    paddingTop: 60,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  header: {
+    marginBottom: 32,
+  },
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
+  },
+  title: {
+    fontSize: 32,
+    fontFamily: 'Poppins-Bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    lineHeight: 24,
+  },
+  formContainer: {
+    borderRadius: 24,
+    padding: 24,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 16,
+        elevation: 8,
+      },
+    }),
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    marginLeft: 12,
+    marginRight: 8,
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginBottom: 24,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  loginButton: {
+    backgroundColor: '#FF6B7A',
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginBottom: 24,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 12px rgba(255, 107, 122, 0.3)',
+      },
+      default: {
+        shadowColor: '#FF6B7A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 6,
+      },
+    }),
+  },
+  loginButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Poppins-Bold',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    marginHorizontal: 16,
+  },
+  googleButton: {
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    marginBottom: 24,
+  },
+  googleButtonText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signUpText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+  },
+  signUpLink: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+  },
+});

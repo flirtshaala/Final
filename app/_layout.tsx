@@ -13,7 +13,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UserProvider } from '@/context/UserContext';
-import { Platform } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,6 +42,12 @@ export default function RootLayout() {
         <UserProvider>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="auth/login" />
+            <Stack.Screen name="auth/signup" />
+            <Stack.Screen name="auth/forgot-password" />
+            <Stack.Screen name="premium" />
+            <Stack.Screen name="settings" />
+            <Stack.Screen name="profile/edit" />
           </Stack>
           <StatusBar style="auto" />
         </UserProvider>

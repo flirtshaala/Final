@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedGradientBackground } from '@/components/ThemedGradientBackground';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import BannerAd from '@/components/BannerAd';
-import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
+import { Copy, RefreshCw, Share2, ArrowLeft, Heart, Clock, Trash2, MoreHorizontal } from 'lucide-react-native';
 import { openaiService, ResponseType } from '@/services/openai';
 import { apiService } from '@/services/api';
 import { useUser } from '@/context/UserContext';
@@ -361,7 +361,7 @@ export default function HistoryTab() {
             {imageUri && (
               <View style={styles.originalImageContainer}>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Original Screenshot</Text>
-                <Image source={{ uri: imageUri }} style={styles.originalImage} />
+                <Image source={{ uri: imageUri }} style={styles.originalImage} resizeMode="cover" />
               </View>
             )}
 
@@ -463,7 +463,7 @@ export default function HistoryTab() {
                       </View>
                     </View>
                     {item.imageUri && (
-                      <Image source={{ uri: item.imageUri }} style={styles.historyThumbnail} />
+                      <Image source={{ uri: item.imageUri }} style={styles.historyThumbnail} resizeMode="cover" />
                     )}
                   </TouchableOpacity>
                   
@@ -603,7 +603,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 16,
-    resizeMode: 'cover',
   },
   originalTextContainer: {
     marginBottom: 24,
@@ -680,7 +679,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6B7A',
   },
   actionButtonText: {
-    fontSize: 14,
+    fontSize:  14,
     fontFamily: 'Poppins-SemiBold',
     marginLeft: 6,
   },
@@ -746,7 +745,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-    resizeMode: 'cover',
     marginRight: 12,
   },
   deleteButton: {

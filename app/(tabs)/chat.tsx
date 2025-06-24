@@ -24,7 +24,7 @@ import { adService } from '@/services/ads';
 
 export default function ChatTab() {
   const [message, setMessage] = useState('');
-  const [responseType, setResponseType] = useState<ResponseType>('flirty');
+  const [selectedStyle, setSelectedStyle] = useState<ResponseType>('flirty');
   const [loading, setLoading] = useState(false);
   const [pickupLine, setPickupLine] = useState('');
   const [pickupLoading, setPickupLoading] = useState(false);
@@ -34,12 +34,20 @@ export default function ChatTab() {
   const { colors, isDarkMode } = useTheme();
 
   const responseTypes = [
-    { key: 'flirty', label: 'Flirty', color: '#FF6B7A' },
-    { key: 'witty', label: 'Witty', color: '#8B5CF6' },
-    { key: 'savage', label: 'Savage', color: '#EF4444' },
+    { key: 'flirty', label: 'Flirty', color: '#FF6B7A', bgColor: '#FF6B7A' },
+    { key: 'witty', label: 'Witty', color: '#8B5CF6', bgColor: '#8B5CF6' },
+    { key: 'savage', label: 'Savage', color: '#EF4444', bgColor: '#EF4444' },
   ] as const;
 
+  const getSelectedStyleConfig = () => {
+    return responseTypes.find(type => type.key === selectedStyle) || responseTypes[0];
+  };
+
   const handleGenerateResponse = async () => {
+    console.log('Generate Response button clicked!');
+    console.log('Message:', message);
+    console.log('Selected Style:', selectedStyle);
+
     if (!message.trim()) {
       Alert.alert('Error', 'Please enter a message first!');
       return;
@@ -87,11 +95,10 @@ export default function ChatTab() {
   };
 
   const generateResponse = async (watchedAd: boolean) => {
+    console.log('Generating response for:', { message, selectedStyle });
     setLoading(true);
     
     try {
-      console.log('Generating response for:', { message, responseType });
-      
       // Try backend API first, fallback to OpenAI service
       let response: string;
       
@@ -99,7 +106,7 @@ export default function ChatTab() {
         // Call backend API
         const backendResponse = await apiService.generateResponse({
           chatText: message.trim(),
-          responseType
+          responseType: selectedStyle
         });
         response = backendResponse.response;
         console.log('Backend response received:', response);
@@ -107,7 +114,7 @@ export default function ChatTab() {
         console.warn('Backend API failed, falling back to OpenAI service:', backendError);
         
         // Fallback to direct OpenAI service
-        response = await openaiService.generateFlirtyResponse(message.trim(), responseType);
+        response = await openaiService.generateFlirtyResponse(message.trim(), selectedStyle);
         console.log('OpenAI service response received:', response);
       }
       
@@ -125,7 +132,7 @@ export default function ChatTab() {
       console.log('Navigating to history page with:', {
         response,
         originalText: message,
-        responseType
+        responseType: selectedStyle
       });
       
       router.push({
@@ -133,7 +140,7 @@ export default function ChatTab() {
         params: { 
           response: response.trim(),
           originalText: message.trim(),
-          responseType
+          responseType: selectedStyle
         }
       });
       
@@ -157,10 +164,12 @@ export default function ChatTab() {
   };
 
   const handleGetPickupLine = async () => {
+    console.log('Getting pickup line...');
     setPickupLoading(true);
     try {
       const result = await apiService.getPickupLine();
       setPickupLine(result.line);
+      console.log('Pickup line received:', result.line);
     } catch (error) {
       console.error('Pickup line error:', error);
       Alert.alert('Error', 'Failed to get pickup line. Please try again.');
@@ -170,6 +179,7 @@ export default function ChatTab() {
   };
 
   const handleRegeneratePickupLine = async () => {
+    console.log('Regenerating pickup line...');
     await handleGetPickupLine();
   };
 
@@ -316,15 +326,18 @@ export default function ChatTab() {
                     style={[
                       styles.typeButton,
                       { backgroundColor: colors.surface, borderColor: colors.border },
-                      responseType === type.key && { backgroundColor: type.color, borderColor: type.color },
+                      selectedStyle === type.key && { backgroundColor: type.color, borderColor: type.color },
                     ]}
-                    onPress={() => setResponseType(type.key)}
+                    onPress={() => {
+                      console.log('Selected style:', type.key);
+                      setSelectedStyle(type.key);
+                    }}
                   >
                     <Text
                       style={[
                         styles.typeButtonText,
                         { color: colors.text },
-                        responseType === type.key && { color: 'white' },
+                        selectedStyle === type.key && { color: 'white' },
                       ]}
                     >
                       {type.label}
@@ -344,7 +357,10 @@ export default function ChatTab() {
                 placeholder="Paste the message you want to respond to..."
                 placeholderTextColor={colors.textSecondary}
                 value={message}
-                onChangeText={setMessage}
+                onChangeText={(text) => {
+                  console.log('Message input changed:', text);
+                  setMessage(text);
+                }}
                 multiline
                 numberOfLines={4}
               />
@@ -356,6 +372,7 @@ export default function ChatTab() {
             <TouchableOpacity
               style={[
                 styles.generateButton,
+                { backgroundColor: getSelectedStyleConfig().bgColor },
                 (!message.trim() || loading) && styles.generateButtonDisabled,
               ]}
               onPress={handleGenerateResponse}
@@ -366,7 +383,9 @@ export default function ChatTab() {
               ) : (
                 <>
                   <Send size={20} color="white" />
-                  <Text style={styles.generateButtonText}>Generate Response</Text>
+                  <Text style={styles.generateButtonText}>
+                    Generate {getSelectedStyleConfig().label} Response
+                  </Text>
                 </>
               )}
             </TouchableOpacity>
@@ -638,7 +657,6 @@ const styles = StyleSheet.create({
     }),
   },
   generateButton: {
-    backgroundColor: '#FF6B7A',
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: 'row',
@@ -647,12 +665,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     ...Platform.select({
       web: {
-        boxShadow: '0px 4px 8px rgba(255, 107, 122, 0.3)',
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
       },
       default: {
-        shadowColor: '#FF6B7A',
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 4,
       },

@@ -48,7 +48,12 @@ class OpenAIService {
     chatContext: string, 
     responseType: ResponseType = 'flirty'
   ): Promise<string> {
+    console.log('🤖 OpenAI Service called with:', { chatContext, responseType });
+    console.log('🔑 API Key available:', !!this.apiKey && this.apiKey !== 'your_openai_key_here');
+
     if (!this.apiKey || this.apiKey === 'your_openai_key_here' || this.apiKey === '') {
+      console.log('🎭 No OpenAI API key, using mock response');
+      
       // Return a mock response for demo purposes when API key is not available
       const mockResponses = {
         flirty: [
@@ -76,6 +81,8 @@ class OpenAIService {
       
       const responses = mockResponses[responseType];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      console.log('🎭 Mock OpenAI response:', randomResponse);
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -111,6 +118,8 @@ Chat context: "${cleanedContext}"
 Generate ONLY the response text, no explanations, quotes, or meta-commentary. Respond in the SAME language and script as the input.`;
 
     try {
+      console.log('🌐 Making OpenAI API request...');
+      
       const response = await fetch(this.baseURL, {
         method: 'POST',
         headers: {
@@ -130,6 +139,8 @@ Generate ONLY the response text, no explanations, quotes, or meta-commentary. Re
         }),
       });
 
+      console.log('📡 OpenAI API Response Status:', response.status, response.statusText);
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Invalid OpenAI API key. Please check your EXPO_PUBLIC_OPENAI_API_KEY in .env file.');
@@ -141,6 +152,8 @@ Generate ONLY the response text, no explanations, quotes, or meta-commentary. Re
       }
 
       const data: OpenAIResponse = await response.json();
+      console.log('📦 OpenAI API Response Data:', data);
+      
       const generatedResponse = data.choices[0]?.message?.content?.trim();
       
       if (!generatedResponse) {
@@ -154,9 +167,12 @@ Generate ONLY the response text, no explanations, quotes, or meta-commentary. Re
         .replace(/How can I assist/gi, '')
         .trim();
 
-      return cleanedResponse || 'Hey! 😊';
+      const finalResponse = cleanedResponse || 'Hey! 😊';
+      console.log('✅ Final OpenAI response:', finalResponse);
+      
+      return finalResponse;
     } catch (error) {
-      console.error('OpenAI API Error:', error);
+      console.error('❌ OpenAI API Error:', error);
       if (error instanceof Error) {
         throw error;
       }

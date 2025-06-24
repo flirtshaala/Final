@@ -20,6 +20,12 @@ class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
     
+    console.log('🌐 API Request:', {
+      url,
+      method: options.method || 'GET',
+      hasBody: !!options.body
+    });
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -39,21 +45,27 @@ class ApiService {
 
       clearTimeout(timeoutId);
       
+      console.log('📡 API Response Status:', response.status, response.statusText);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('✅ API Response Data:', data);
       return data;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error('❌ API request failed:', error);
       
       // Return mock data for development/demo purposes
       if (endpoint.includes('get-reply') || endpoint.includes('generate-response')) {
+        console.log('🎭 Using mock response due to API failure');
         return this.getMockResponse(options.body) as T;
       } else if (endpoint.includes('process-image')) {
+        console.log('🎭 Using mock image response due to API failure');
         return this.getMockImageResponse(options.body) as T;
       } else if (endpoint.includes('pickup-line') || endpoint.includes('random')) {
+        console.log('🎭 Using mock pickup line due to API failure');
         return this.getMockPickupLine() as T;
       }
       
@@ -65,6 +77,8 @@ class ApiService {
     try {
       const data = typeof body === 'string' ? JSON.parse(body) : body || {};
       const responseType = data.responseType || data.chatText ? 'flirty' : 'flirty';
+      
+      console.log('🎭 Generating mock response for type:', responseType);
       
       const mockResponses = {
         flirty: [
@@ -93,8 +107,10 @@ class ApiService {
       const responses = mockResponses[responseType as keyof typeof mockResponses] || mockResponses.flirty;
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
       
+      console.log('🎭 Mock response generated:', randomResponse);
       return { response: randomResponse };
     } catch (error) {
+      console.error('❌ Error generating mock response:', error);
       return { response: "Hey there! 😊 That's such a sweet message!" };
     }
   }
@@ -144,10 +160,15 @@ class ApiService {
   }
 
   async generateResponse(data: { chatText: string; responseType: 'flirty' | 'witty' | 'savage' }) {
-    return this.request<{ response: string }>('/api/get-reply', {
+    console.log('🚀 ApiService.generateResponse called with:', data);
+    
+    const result = await this.request<{ response: string }>('/api/get-reply', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+    
+    console.log('📦 ApiService.generateResponse result:', result);
+    return result;
   }
 
   async processImage(imageBase64: string, responseType: 'flirty' | 'witty' | 'savage') {

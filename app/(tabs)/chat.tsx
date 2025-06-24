@@ -44,18 +44,21 @@ export default function ChatTab() {
   };
 
   const handleGenerateResponse = async () => {
-    console.log('Generate Response button clicked!');
-    console.log('Message:', message);
-    console.log('Selected Style:', selectedStyle);
+    console.log('🚀 Generate Response button clicked!');
+    console.log('📝 Message:', message);
+    console.log('🎨 Selected Style:', selectedStyle);
 
     if (!message.trim()) {
+      console.log('❌ Empty message, showing alert');
       Alert.alert('Error', 'Please enter a message first!');
       return;
     }
 
     const serviceCheck = canUseService();
+    console.log('🔍 Service check result:', serviceCheck);
     
     if (!serviceCheck.canUse) {
+      console.log('❌ Service unavailable:', serviceCheck.reason);
       Alert.alert(
         'Service Unavailable', 
         serviceCheck.reason || 'Please sign in to use FlirtShaala',
@@ -68,6 +71,7 @@ export default function ChatTab() {
     }
 
     if (serviceCheck.needsAd) {
+      console.log('📺 Ad required before generating response');
       Alert.alert(
         'Watch Ad for Response',
         isPremium 
@@ -95,33 +99,46 @@ export default function ChatTab() {
   };
 
   const generateResponse = async (watchedAd: boolean) => {
-    console.log('Generating response for:', { message, selectedStyle });
+    console.log('⚙️ Starting generateResponse with watchedAd:', watchedAd);
+    console.log('📊 Current state:', { message: message.trim(), selectedStyle });
+    
     setLoading(true);
     
     try {
       // Try backend API first, fallback to OpenAI service
-      let response: string;
+      let response: string = '';
       
       try {
+        console.log('🌐 Attempting backend API call...');
         // Call backend API
         const backendResponse = await apiService.generateResponse({
           chatText: message.trim(),
           responseType: selectedStyle
         });
         response = backendResponse.response;
-        console.log('Backend response received:', response);
+        console.log('✅ Backend response received:', response);
       } catch (backendError) {
-        console.warn('Backend API failed, falling back to OpenAI service:', backendError);
+        console.warn('⚠️ Backend API failed, falling back to OpenAI service:', backendError);
         
         // Fallback to direct OpenAI service
         response = await openaiService.generateFlirtyResponse(message.trim(), selectedStyle);
-        console.log('OpenAI service response received:', response);
+        console.log('✅ OpenAI service response received:', response);
       }
+      
+      console.log('🔍 Final response check:', {
+        response,
+        isEmpty: !response,
+        trimmed: response?.trim(),
+        length: response?.length
+      });
       
       if (!response || response.trim() === '') {
-        throw new Error('Empty response received from server');
+        console.log('❌ Empty response received, showing alert');
+        Alert.alert('No Response Received', 'The AI service returned an empty response. Please try again.');
+        return;
       }
       
+      console.log('📈 Updating usage stats...');
       await updateUsageStats('reply', watchedAd);
       
       // Show interstitial ad every 5 actions for free users
@@ -129,24 +146,45 @@ export default function ChatTab() {
         await adService.showInterstitialAd();
       }
       
-      console.log('Navigating to history page with:', {
-        response,
-        originalText: message,
-        responseType: selectedStyle
-      });
+      console.log('🧪 Testing response display with Alert first...');
       
-      router.push({
-        pathname: '/(tabs)/history',
-        params: { 
-          response: response.trim(),
-          originalText: message.trim(),
-          responseType: selectedStyle
-        }
-      });
+      // TEMPORARY: Show response in alert for debugging
+      Alert.alert(
+        'Generated Response', 
+        response.trim(),
+        [
+          {
+            text: 'Continue to History',
+            onPress: () => {
+              console.log('🧭 Navigating to history page with:', {
+                response: response.trim(),
+                originalText: message.trim(),
+                responseType: selectedStyle
+              });
+              
+              router.push({
+                pathname: '/(tabs)/history',
+                params: { 
+                  response: response.trim(),
+                  originalText: message.trim(),
+                  responseType: selectedStyle
+                }
+              });
+              
+              setMessage('');
+            }
+          },
+          {
+            text: 'Stay Here',
+            onPress: () => {
+              setMessage('');
+            }
+          }
+        ]
+      );
       
-      setMessage('');
     } catch (error: any) {
-      console.error('Generate response error:', error);
+      console.error('❌ Generate response error:', error);
       
       const errorMessage = error.message || 'Failed to generate response';
       
@@ -159,19 +197,20 @@ export default function ChatTab() {
         ]
       );
     } finally {
+      console.log('🏁 Generate response completed, setting loading to false');
       setLoading(false);
     }
   };
 
   const handleGetPickupLine = async () => {
-    console.log('Getting pickup line...');
+    console.log('💘 Getting pickup line...');
     setPickupLoading(true);
     try {
       const result = await apiService.getPickupLine();
       setPickupLine(result.line);
-      console.log('Pickup line received:', result.line);
+      console.log('✅ Pickup line received:', result.line);
     } catch (error) {
-      console.error('Pickup line error:', error);
+      console.error('❌ Pickup line error:', error);
       Alert.alert('Error', 'Failed to get pickup line. Please try again.');
     } finally {
       setPickupLoading(false);
@@ -179,7 +218,7 @@ export default function ChatTab() {
   };
 
   const handleRegeneratePickupLine = async () => {
-    console.log('Regenerating pickup line...');
+    console.log('🔄 Regenerating pickup line...');
     await handleGetPickupLine();
   };
 
@@ -329,7 +368,7 @@ export default function ChatTab() {
                       selectedStyle === type.key && { backgroundColor: type.color, borderColor: type.color },
                     ]}
                     onPress={() => {
-                      console.log('Selected style:', type.key);
+                      console.log('🎨 Selected style:', type.key);
                       setSelectedStyle(type.key);
                     }}
                   >
@@ -358,7 +397,7 @@ export default function ChatTab() {
                 placeholderTextColor={colors.textSecondary}
                 value={message}
                 onChangeText={(text) => {
-                  console.log('Message input changed:', text);
+                  console.log('📝 Message input changed:', text);
                   setMessage(text);
                 }}
                 multiline

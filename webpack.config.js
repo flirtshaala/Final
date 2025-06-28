@@ -33,7 +33,7 @@ module.exports = {
               '@babel/preset-typescript',
             ],
             plugins: [
-              'react-native-web/babel',
+              'babel-plugin-react-native-web',
               [
                 'module-resolver',
                 {

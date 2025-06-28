@@ -10,14 +10,11 @@
     "noEmit": true,
     "strict": true,
     "target": "esnext",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

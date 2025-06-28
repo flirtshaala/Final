@@ -1,91 +1,203 @@
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { StatusBar, Platform } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import React, {useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from 'react-native';
+import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
 
-// Context Providers
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { UserProvider } from './context/UserContext';
+const Tab = createBottomTabNavigator();
 
-// Navigation
-import MainTabNavigator from './navigation/MainTabNavigator';
-import AuthNavigator from './navigation/AuthNavigator';
+// Chat Tab Component
+function ChatScreen() {
+  const handleOCR = () => {
+    Alert.alert('OCR', 'OCR functionality will be implemented here');
+  };
 
-// Screens
-import SplashScreenComponent from './screens/SplashScreen';
-import PremiumScreen from './screens/PremiumScreen';
-import SettingsScreen from './screens/SettingsScreen';
-import EditProfileScreen from './screens/EditProfileScreen';
+  const handleChatGPT = () => {
+    Alert.alert('ChatGPT', 'ChatGPT functionality will be implemented here');
+  };
 
-// Services
-import { initializeServices } from './services/initialization';
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>FlirtShaala Chat</Text>
+        <TouchableOpacity style={styles.button} onPress={handleOCR}>
+          <Text style={styles.buttonText}>OCR Screenshot</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleChatGPT}>
+          <Text style={styles.buttonText}>Generate Response</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
 
-const Stack = createStackNavigator();
+// Screenshot Tab Component
+function ScreenshotScreen() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Screenshot Analysis</Text>
+        <Text style={styles.subtitle}>Upload screenshots for analysis</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+// History Tab Component
+function HistoryScreen() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Response History</Text>
+        <Text style={styles.subtitle}>Your generated responses</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+// Account Tab Component
+function AccountScreen() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Account</Text>
+        <Text style={styles.subtitle}>Manage your profile</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+// Banner Ad Component
+function BannerAdComponent() {
+  return (
+    <View style={styles.adContainer}>
+      <BannerAd
+        unitId={TestIds.BANNER}
+        size={BannerAdSize.BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: false,
+        }}
+        onAdLoaded={() => {
+          console.log('Banner ad loaded');
+        }}
+        onAdFailedToLoad={error => {
+          console.log('Banner ad failed to load:', error);
+        }}
+      />
+    </View>
+  );
+}
 
 function App(): React.JSX.Element {
   useEffect(() => {
-    const initApp = async () => {
-      try {
-        await initializeServices();
-      } catch (error) {
-        console.error('Failed to initialize services:', error);
-      } finally {
-        if (Platform.OS !== 'web') {
-          SplashScreen.hide();
-        }
-      }
-    };
-
-    initApp();
+    // Initialize Supabase auth listener here
+    console.log('App initialized');
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <AuthProvider>
-          <ThemeProvider>
-            <UserProvider>
-              <NavigationContainer>
-                <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-                <Stack.Navigator
-                  initialRouteName="Splash"
-                  screenOptions={{
-                    headerShown: false,
-                    gestureEnabled: true,
-                    cardStyleInterpolator: ({ current, layouts }) => {
-                      return {
-                        cardStyle: {
-                          transform: [
-                            {
-                              translateX: current.progress.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [layouts.screen.width, 0],
-                              }),
-                            },
-                          ],
-                        },
-                      };
-                    },
-                  }}
-                >
-                  <Stack.Screen name="Splash" component={SplashScreenComponent} />
-                  <Stack.Screen name="Auth" component={AuthNavigator} />
-                  <Stack.Screen name="Main" component={MainTabNavigator} />
-                  <Stack.Screen name="Premium" component={PremiumScreen} />
-                  <Stack.Screen name="Settings" component={SettingsScreen} />
-                  <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </UserProvider>
-          </ThemeProvider>
-        </AuthProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <NavigationContainer>
+      <View style={styles.appContainer}>
+        <Tab.Navigator
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: styles.tabBar,
+            tabBarActiveTintColor: '#FF6B7A',
+            tabBarInactiveTintColor: '#718096',
+          }}>
+          <Tab.Screen
+            name="Chat"
+            component={ChatScreen}
+            options={{
+              tabBarLabel: 'Chat',
+            }}
+          />
+          <Tab.Screen
+            name="Screenshot"
+            component={ScreenshotScreen}
+            options={{
+              tabBarLabel: 'Screenshot',
+            }}
+          />
+          <Tab.Screen
+            name="History"
+            component={HistoryScreen}
+            options={{
+              tabBarLabel: 'History',
+            }}
+          />
+          <Tab.Screen
+            name="Account"
+            component={AccountScreen}
+            options={{
+              tabBarLabel: 'Account',
+            }}
+          />
+        </Tab.Navigator>
+        <BannerAdComponent />
+      </View>
+    </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  appContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2D3748',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#718096',
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#FF6B7A',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  tabBar: {
+    backgroundColor: '#FFFFFF',
+    borderTopColor: '#E2E8F0',
+    borderTopWidth: 1,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+    paddingTop: 10,
+    height: Platform.OS === 'ios' ? 90 : 70,
+  },
+  adContainer: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 10,
+  },
+});
 
 export default App;

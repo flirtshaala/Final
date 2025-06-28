@@ -14,9 +14,10 @@
 -keep class com.facebook.hermes.** { *; }
 -keep class com.facebook.jni.** { *; }
 
-# Hermes specific rules
+# Hermes specific rules for debugging
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep class com.facebook.hermes.intl.** { *; }
+-keep class com.facebook.hermes.inspector.** { *; }
 
 # Keep source file names and line numbers for debugging
 -keepattributes SourceFile,LineNumberTable
@@ -26,6 +27,11 @@
 -keepattributes *Annotation*
 -keepattributes Signature
 -keepattributes Exceptions
+
+# Keep JavaScript debugging interfaces
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
 # React Native Google Mobile Ads
 -keep class com.google.android.gms.ads.** { *; }
@@ -38,10 +44,14 @@
 # Supabase
 -keep class io.supabase.** { *; }
 
-# Keep JavaScript interface for debugging
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
-}
-
 # Don't obfuscate classes used by React Native
 -keep class com.flirtshaala.** { *; }
+
+# Keep Hermes debugging classes
+-keep class com.facebook.hermes.reactexecutor.** { *; }
+-keep class com.facebook.react.bridge.** { *; }
+-keep class com.facebook.react.devsupport.** { *; }
+
+# Preserve debugging symbols for Hermes
+-keepnames class com.facebook.hermes.** { *; }
+-keepnames class com.facebook.react.** { *; }

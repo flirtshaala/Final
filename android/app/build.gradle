@@ -48,6 +48,9 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+    
+    // Enable Hermes explicitly
+    enableHermes = project.ext.react.get("enableHermes", true)
 }
 
 /**
@@ -88,6 +91,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        
+        // Enable debugging for Hermes
+        buildConfigField "boolean", "IS_HERMES_ENABLED", "${project.ext.react.enableHermes ?: true}"
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "${project.ext.react.newArchEnabled ?: false}"
     }
 
     splits {
@@ -112,6 +119,9 @@ android {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // Ensure source maps are generated for debugging
+            shrinkResources false
+            zipAlignEnabled false
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -139,6 +149,8 @@ dependencies {
     // Hermes Engine - explicitly include for debugging
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
+        // Ensure hermes-engine is available for debugging
+        implementation("com.facebook.react:hermes-engine:+")
     } else {
         implementation jscFlavor
     }

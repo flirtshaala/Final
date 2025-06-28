@@ -101,28 +101,67 @@ function App(): React.JSX.Element {
     // Initialize Supabase auth listener here
     console.log('🚀 FlirtShaala App initialized');
     
-    // Check Hermes status with detailed logging
-    console.log('🔍 Checking JavaScript Engine...');
-    console.log('global.HermesInternal exists:', typeof global.HermesInternal !== 'undefined');
+    // Enhanced Hermes detection with detailed logging
+    console.log('🔍 Checking JavaScript Engine Status...');
+    console.log('=====================================');
+    
+    // Check for Hermes
+    const hasHermesInternal = typeof global.HermesInternal !== 'undefined' && global.HermesInternal !== null;
+    const hasHermesGlobal = typeof global.HermesInternal === 'object';
+    
+    console.log('global.HermesInternal exists:', hasHermesInternal);
+    console.log('global.HermesInternal type:', typeof global.HermesInternal);
     console.log('global.HermesInternal value:', global.HermesInternal);
     
-    if (typeof global.HermesInternal !== 'undefined' && global.HermesInternal !== null) {
-      console.log('✅ Hermes JS Engine is ACTIVE and ready for debugging!');
-      console.log('🐛 You can now use the new React Native debugger');
-      console.log('📱 Press "j" in Metro terminal to open debugger');
+    // Additional Hermes checks
+    if (hasHermesInternal) {
+      console.log('✅ HERMES JS ENGINE IS ACTIVE!');
+      console.log('🐛 New React Native debugger is available');
+      console.log('📱 To debug: Press "j" in Metro terminal');
+      console.log('🔧 Or open dev menu and select "Open Debugger"');
+      
+      // Log Hermes version if available
+      try {
+        if (global.HermesInternal && global.HermesInternal.getRuntimeProperties) {
+          const runtimeProps = global.HermesInternal.getRuntimeProperties();
+          console.log('🏷️  Hermes Runtime Properties:', runtimeProps);
+        }
+      } catch (e) {
+        console.log('ℹ️  Hermes runtime properties not available');
+      }
     } else {
-      console.log('❌ Hermes JS Engine is NOT active - using JSC');
-      console.log('⚠️  This means the new debugger won\'t work properly');
+      console.log('❌ HERMES IS NOT ACTIVE - Using JSC');
+      console.log('⚠️  The new experimental debugger requires Hermes');
+      console.log('🔧 Check android/gradle.properties: hermesEnabled=true');
+      console.log('🧹 Try: npm run clean-build');
     }
     
-    // Additional engine detection
+    // Check for other debugging tools
     if (typeof global.__REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined') {
-      console.log('🛠️  React DevTools detected');
+      console.log('🛠️  React DevTools detected and available');
     }
     
-    // Log platform info
+    // Check for Flipper
+    if (typeof global.__FLIPPER__ !== 'undefined') {
+      console.log('🐬 Flipper detected and available');
+    }
+    
+    // Platform and build info
+    console.log('=====================================');
     console.log('📱 Platform:', Platform.OS);
     console.log('🏗️  Debug mode:', __DEV__);
+    console.log('🔧 React Native version: 0.73.6');
+    
+    // Instructions for debugging
+    if (hasHermesInternal && __DEV__) {
+      console.log('=====================================');
+      console.log('🎯 DEBUGGING INSTRUCTIONS:');
+      console.log('1. Make sure Metro is running with: npm run dev-debug');
+      console.log('2. Press "j" in Metro terminal to open debugger');
+      console.log('3. Chrome DevTools will open with full debugging support');
+      console.log('4. Set breakpoints, inspect variables, view network requests');
+      console.log('=====================================');
+    }
     
   }, []);
 

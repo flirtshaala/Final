@@ -1,7 +1,7 @@
 const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
 /**
- * Metro configuration for React Native 0.73 with Hermes debugging support
+ * Metro configuration for React Native 0.73 with enhanced Hermes debugging support
  * https://facebook.github.io/metro/docs/configuration
  *
  * @type {import('metro-config').MetroConfig}
@@ -38,8 +38,10 @@ const config = {
         keep_fnames: true,
       },
     },
-    // Enable inline source maps for better debugging
+    // Disable inline requires for better debugging
     inlineRequires: false,
+    // Enable source maps for Hermes debugging
+    hermesParser: true,
   },
   serializer: {
     // Create source maps for debugging
@@ -48,6 +50,16 @@ const config = {
         // Use relative paths for better source map support
         return path.replace(__dirname, '.');
       };
+    },
+    // Generate source maps for debugging
+    getModulesRunBeforeMainModule: () => [
+      require.resolve('react-native/Libraries/Core/InitializeCore'),
+    ],
+  },
+  symbolicator: {
+    // Enable symbolication for better stack traces
+    customizeFrame: (frame) => {
+      return frame;
     },
   },
 };

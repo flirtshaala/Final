@@ -5,14 +5,13 @@
   "scripts": {
     "android": "npx react-native run-android",
     "ios": "npx react-native run-ios",
+    "web": "npx react-native-web-cli start",
+    "start": "npx react-native start",
     "lint": "eslint .",
-    "start": "npx react-native start --experimental-debugger",
-    "dev-debug": "npx react-native start --experimental-debugger --reset-cache --verbose",
     "test": "jest",
     "build:android": "cd android && ./gradlew assembleRelease",
-    "clean": "npx react-native clean",
-    "clean-build": "cd android && ./gradlew clean && cd .. && npx react-native run-android",
-    "full-clean": "npx react-native clean && cd android && ./gradlew clean && cd .. && npm install && npx react-native run-android"
+    "build:web": "npx react-native-web-cli build",
+    "clean": "npx react-native clean"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0",
@@ -21,7 +20,6 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.3.20",
     "@supabase/supabase-js": "^2.39.3",
-    "hermes-engine": "~0.11.0",
     "lucide-react-native": "^0.460.0",
     "react": "18.2.0",
     "react-native": "0.73.6",
@@ -33,6 +31,8 @@
     "react-native-screens": "^3.29.0",
     "react-native-svg": "^14.1.0",
     "react-native-vector-icons": "^10.0.3",
+    "react-native-web": "^0.19.10",
+    "react-dom": "18.2.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -48,12 +48,17 @@
     "@types/uuid": "^9.0.8",
     "babel-jest": "^29.6.3",
     "babel-plugin-module-resolver": "^5.0.0",
+    "babel-plugin-react-native-web": "^0.19.10",
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
     "metro-react-native-babel-preset": "0.77.0",
     "prettier": "2.8.8",
+    "react-native-web-cli": "^1.0.0",
     "react-test-renderer": "18.2.0",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   },
   "engines": {
     "node": ">=18"

@@ -7,10 +7,11 @@
     "ios": "npx react-native run-ios",
     "lint": "eslint .",
     "start": "npx react-native start --experimental-debugger",
-    "dev-debug": "npx react-native start --experimental-debugger --verbose",
+    "dev-debug": "npx react-native start --experimental-debugger --reset-cache",
     "test": "jest",
     "build:android": "cd android && ./gradlew assembleRelease",
-    "clean": "npx react-native clean"
+    "clean": "npx react-native clean",
+    "clean-build": "cd android && ./gradlew clean && ./gradlew assembleDebug"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0",
@@ -19,6 +20,7 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.3.20",
     "@supabase/supabase-js": "^2.39.3",
+    "hermes-engine": "~0.11.0",
     "lucide-react-native": "^0.460.0",
     "react": "18.2.0",
     "react-native": "0.73.6",

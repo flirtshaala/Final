@@ -99,15 +99,31 @@ function BannerAdComponent() {
 function App(): React.JSX.Element {
   useEffect(() => {
     // Initialize Supabase auth listener here
-    console.log('App initialized');
+    console.log('🚀 FlirtShaala App initialized');
     
-    // Log Hermes status to confirm it's active
-    console.log('Hermes Internal:', global.HermesInternal);
-    if (global.HermesInternal) {
-      console.log('✅ Hermes JS Engine is active');
+    // Check Hermes status with detailed logging
+    console.log('🔍 Checking JavaScript Engine...');
+    console.log('global.HermesInternal exists:', typeof global.HermesInternal !== 'undefined');
+    console.log('global.HermesInternal value:', global.HermesInternal);
+    
+    if (typeof global.HermesInternal !== 'undefined' && global.HermesInternal !== null) {
+      console.log('✅ Hermes JS Engine is ACTIVE and ready for debugging!');
+      console.log('🐛 You can now use the new React Native debugger');
+      console.log('📱 Press "j" in Metro terminal to open debugger');
     } else {
       console.log('❌ Hermes JS Engine is NOT active - using JSC');
+      console.log('⚠️  This means the new debugger won\'t work properly');
     }
+    
+    // Additional engine detection
+    if (typeof global.__REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined') {
+      console.log('🛠️  React DevTools detected');
+    }
+    
+    // Log platform info
+    console.log('📱 Platform:', Platform.OS);
+    console.log('🏗️  Debug mode:', __DEV__);
+    
   }, []);
 
   return (

@@ -100,6 +100,14 @@ function App(): React.JSX.Element {
   useEffect(() => {
     // Initialize Supabase auth listener here
     console.log('App initialized');
+    
+    // Log Hermes status to confirm it's active
+    console.log('Hermes Internal:', global.HermesInternal);
+    if (global.HermesInternal) {
+      console.log('✅ Hermes JS Engine is active');
+    } else {
+      console.log('❌ Hermes JS Engine is NOT active - using JSC');
+    }
   }, []);
 
   return (

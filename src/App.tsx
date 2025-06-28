@@ -12,6 +12,10 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
+import { openaiService } from './services/openai';
+import { ocrService } from './services/ocr';
+import { adService } from './services/ads';
+import BannerAdComponent from './components/BannerAd';
 
 // Safe icon component for web
 const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => {
@@ -26,27 +30,6 @@ const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => {
     <Text style={{ fontSize: 24, opacity: focused ? 1 : 0.6 }}>
       {iconMap[name] || '📱'}
     </Text>
-  );
-};
-
-// Mock components for cross-platform compatibility
-const BannerAdComponent = () => {
-  if (Platform.OS === 'web') {
-    return (
-      <View style={styles.adContainer}>
-        <View style={styles.webAdPlaceholder}>
-          <Text style={styles.webAdText}>Ad Space (Web Preview)</Text>
-        </View>
-      </View>
-    );
-  }
-  
-  return (
-    <View style={styles.adContainer}>
-      <View style={styles.nativeAdPlaceholder}>
-        <Text style={styles.nativeAdText}>AdMob Banner</Text>
-      </View>
-    </View>
   );
 };
 
@@ -66,17 +49,41 @@ function ChatScreen() {
 
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      const responses = {
-        flirty: "Hey there! 😊 That's such a sweet message!",
-        witty: "Well, well, well... someone's got game! 😏",
-        savage: "Oh really? That's your best shot? 😤"
-      };
+    try {
+      // Check if user needs to watch ad (only on mobile)
+      if (Platform.OS !== 'web') {
+        const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
+        if (shouldShowAd) {
+          const adWatched = await adService.showRewardedAd();
+          if (!adWatched) {
+            Alert.alert('Ad Required', 'Please watch the ad to get your response.');
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      // Generate response using OpenAI
+      const response = await openaiService.generateFlirtyResponse(message.trim(), responseType);
       
-      Alert.alert('Generated Response', responses[responseType]);
+      Alert.alert('Generated Response', response, [
+        {
+          text: 'Copy',
+          onPress: () => {
+            // Copy to clipboard logic would go here
+            Alert.alert('Copied!', 'Response copied to clipboard');
+          }
+        },
+        { text: 'OK' }
+      ]);
+      
+      setMessage('');
+    } catch (error: any) {
+      console.error('Generate response error:', error);
+      Alert.alert('Error', error.message || 'Failed to generate response. Please try again.');
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -138,6 +145,9 @@ function ChatScreen() {
           <Text style={styles.infoText}>1. Enter the message you want to respond to</Text>
           <Text style={styles.infoText}>2. Choose your response style (flirty, witty, savage)</Text>
           <Text style={styles.infoText}>3. Get AI-generated perfect replies!</Text>
+          {Platform.OS === 'web' && (
+            <Text style={styles.infoText}>4. Web version - no ads required!</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -147,6 +157,7 @@ function ChatScreen() {
 // Screenshot Tab Component
 function ScreenshotScreen() {
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
   const handleUpload = () => {
     if (Platform.OS === 'web') {
@@ -157,6 +168,11 @@ function ScreenshotScreen() {
       input.onchange = (event: any) => {
         const file = event.target.files[0];
         if (file) {
+          if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            Alert.alert('File Too Large', 'Please select an image smaller than 10MB.');
+            return;
+          }
+          
           const reader = new FileReader();
           reader.onload = (e) => {
             setSelectedImage(e.target?.result as string);
@@ -170,13 +186,59 @@ function ScreenshotScreen() {
     }
   };
 
-  const handleProcessImage = () => {
+  const handleProcessImage = async () => {
     if (!selectedImage) {
       Alert.alert('Error', 'Please select an image first!');
       return;
     }
 
-    Alert.alert('Processing', 'OCR and AI response generation will be implemented here');
+    setLoading(true);
+
+    try {
+      // Check if user needs to watch ad (only on mobile)
+      if (Platform.OS !== 'web') {
+        const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
+        if (shouldShowAd) {
+          const adWatched = await adService.showRewardedAd();
+          if (!adWatched) {
+            Alert.alert('Ad Required', 'Please watch the ad to process your image.');
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      // Extract text from image
+      const extractedText = await ocrService.extractTextFromImage(selectedImage);
+      
+      if (!extractedText.trim()) {
+        Alert.alert('No Text Found', 'Could not extract text from the image. Please try a clearer screenshot.');
+        setLoading(false);
+        return;
+      }
+
+      // Generate response
+      const response = await openaiService.generateFlirtyResponse(extractedText, 'flirty');
+      
+      Alert.alert(
+        'Extracted Text & Response',
+        `Original: "${extractedText}"\n\nSuggested Reply: "${response}"`,
+        [
+          {
+            text: 'Copy Reply',
+            onPress: () => {
+              Alert.alert('Copied!', 'Response copied to clipboard');
+            }
+          },
+          { text: 'OK' }
+        ]
+      );
+    } catch (error: any) {
+      console.error('Process image error:', error);
+      Alert.alert('Error', error.message || 'Failed to process image. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -194,8 +256,14 @@ function ScreenshotScreen() {
                 style={{ width: '100%', height: 200, objectFit: 'cover', borderRadius: 12 }}
               />
             )}
-            <TouchableOpacity style={styles.processButton} onPress={handleProcessImage}>
-              <Text style={styles.processButtonText}>Process Image</Text>
+            <TouchableOpacity 
+              style={[styles.processButton, loading && styles.processButtonDisabled]} 
+              onPress={handleProcessImage}
+              disabled={loading}
+            >
+              <Text style={styles.processButtonText}>
+                {loading ? 'Processing...' : 'Process Image'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.changeImageButton} onPress={handleUpload}>
               <Text style={styles.changeImageText}>Change Image</Text>
@@ -336,6 +404,14 @@ function AccountScreen() {
           <Text style={styles.premiumTitle}>Upgrade to Premium</Text>
           <Text style={styles.premiumSubtitle}>Unlimited responses • Ad-free • Priority support</Text>
         </TouchableOpacity>
+
+        {Platform.OS === 'web' && (
+          <View style={styles.webInfo}>
+            <Text style={styles.webInfoText}>
+              🌐 Web Version - Enjoy ad-free experience!
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -346,6 +422,11 @@ function App(): React.JSX.Element {
     console.log('🚀 FlirtShaala App initialized');
     console.log('📱 Platform:', Platform.OS);
     console.log('🌐 Running in:', Platform.OS === 'web' ? 'Browser' : 'Native App');
+    
+    // Initialize ads service (only on mobile)
+    if (Platform.OS !== 'web') {
+      adService.initialize().catch(console.error);
+    }
   }, []);
 
   return (
@@ -385,7 +466,8 @@ function App(): React.JSX.Element {
           <Tab.Screen name="Chat" component={ChatScreen} />
           <Tab.Screen name="History" component={HistoryScreen} />
         </Tab.Navigator>
-        <BannerAdComponent />
+        {/* Only show banner ad on mobile platforms */}
+        {Platform.OS !== 'web' && <BannerAdComponent />}
       </View>
     </NavigationContainer>
   );
@@ -545,6 +627,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 16,
+  },
+  processButtonDisabled: {
+    backgroundColor: '#CBD5E0',
   },
   processButtonText: {
     color: '#FFFFFF',
@@ -708,6 +793,20 @@ const styles = StyleSheet.create({
     color: '#718096',
     textAlign: 'center',
   },
+  webInfo: {
+    backgroundColor: '#E6FFFA',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#81E6D9',
+  },
+  webInfoText: {
+    fontSize: 14,
+    color: '#234E52',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
   tabBar: {
     backgroundColor: '#FFFFFF',
     borderTopColor: '#E2E8F0',
@@ -720,38 +819,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     marginTop: 4,
-  },
-  adContainer: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-  },
-  webAdPlaceholder: {
-    backgroundColor: '#F7FAFC',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    borderStyle: 'dashed',
-  },
-  webAdText: {
-    color: '#718096',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  nativeAdPlaceholder: {
-    backgroundColor: '#FF6B7A',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  nativeAdText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '500',
   },
 });
 

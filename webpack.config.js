@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -11,7 +12,9 @@ module.exports = {
   resolve: {
     alias: {
       'react-native$': 'react-native-web',
-      'react-native-vector-icons': 'react-native-vector-icons/dist',
+      'react-native-vector-icons': path.resolve(__dirname, 'src/components/MockIcons'),
+      'react-native-google-mobile-ads': path.resolve(__dirname, 'src/mocks/mockAds'),
+      '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/mocks/mockStorage'),
       '@': path.resolve(__dirname, 'src'),
     },
     extensions: ['.web.js', '.js', '.web.ts', '.ts', '.web.tsx', '.tsx', '.json'],
@@ -65,6 +68,12 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      inject: true,
+    }),
+  ],
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),
@@ -73,5 +82,6 @@ module.exports = {
     port: 3000,
     historyApiFallback: true,
     hot: true,
+    open: false,
   },
 };

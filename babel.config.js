@@ -1,6 +1,11 @@
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+  presets: [
+    '@babel/preset-env',
+    '@babel/preset-react',
+    '@babel/preset-typescript',
+  ],
   plugins: [
+    'react-native-web/babel',
     [
       'module-resolver',
       {
@@ -10,7 +15,5 @@ module.exports = {
         },
       },
     ],
-    'react-native-reanimated/plugin',
-    ...(process.env.NODE_ENV === 'production' ? [] : ['react-native-web']),
   ],
 };

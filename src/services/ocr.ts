@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 interface OCRResponse {
   ParsedResults: {
     ParsedText: string;
@@ -14,11 +12,6 @@ class OCRService {
 
   constructor() {
     this.apiKey = process.env.EXPO_PUBLIC_OCR_API_KEY || '';
-    
-    // For web deployment, also check window object
-    if (typeof window !== 'undefined' && !this.apiKey) {
-      this.apiKey = (window as any).EXPO_PUBLIC_OCR_API_KEY || '';
-    }
   }
 
   async extractTextFromImage(imageUri: string): Promise<string> {
@@ -28,67 +21,13 @@ class OCRService {
         return this.getMockExtractedText();
       }
 
-      // Convert image to blob for API
-      let imageBlob: Blob;
-      
-      if (Platform.OS === 'web') {
-        if (imageUri.startsWith('data:')) {
-          // Data URL
-          const response = await fetch(imageUri);
-          imageBlob = await response.blob();
-        } else {
-          // Regular URL
-          const response = await fetch(imageUri);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch image: ${response.status}`);
-          }
-          imageBlob = await response.blob();
-        }
-      } else {
-        // Native platforms - create FormData directly
-        const formData = new FormData();
-        formData.append('file', {
-          uri: imageUri,
-          type: 'image/jpeg',
-          name: 'chat_screenshot.jpg',
-        } as any);
-        formData.append('apikey', this.apiKey);
-        formData.append('language', 'eng');
-        formData.append('isOverlayRequired', 'false');
-        formData.append('detectOrientation', 'true');
-        formData.append('scale', 'true');
-        formData.append('OCREngine', '2');
-
-        const response = await fetch(this.baseURL, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`OCR API error: ${response.status} ${response.statusText}`);
-        }
-
-        const data: OCRResponse = await response.json();
-
-        if (data.IsErroredOnProcessing) {
-          throw new Error(data.ErrorMessage || 'OCR processing failed');
-        }
-
-        const extractedText = data.ParsedResults?.[0]?.ParsedText?.trim() || '';
-        
-        if (!extractedText) {
-          throw new Error('No text found in the image. Please try with a clearer screenshot.');
-        }
-
-        return extractedText;
-      }
-
-      // Web-specific OCR processing
+      // Create FormData for native platforms
       const formData = new FormData();
-      formData.append('file', imageBlob, 'chat_screenshot.jpg');
+      formData.append('file', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: 'chat_screenshot.jpg',
+      } as any);
       formData.append('apikey', this.apiKey);
       formData.append('language', 'eng');
       formData.append('isOverlayRequired', 'false');
@@ -96,48 +35,31 @@ class OCRService {
       formData.append('scale', 'true');
       formData.append('OCREngine', '2');
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const response = await fetch(this.baseURL, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
 
-      try {
-        const response = await fetch(this.baseURL, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Accept': 'application/json',
-          },
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Invalid OCR API key. Please check your EXPO_PUBLIC_OCR_API_KEY in .env file.');
-          }
-          if (response.status === 429) {
-            throw new Error('OCR API rate limit exceeded. Please try again later.');
-          }
-          throw new Error(`OCR API error: ${response.status} ${response.statusText}`);
-        }
-
-        const data: OCRResponse = await response.json();
-
-        if (data.IsErroredOnProcessing) {
-          throw new Error(data.ErrorMessage || 'OCR processing failed');
-        }
-
-        const extractedText = data.ParsedResults?.[0]?.ParsedText?.trim() || '';
-        
-        if (!extractedText) {
-          throw new Error('No text found in the image. Please try with a clearer screenshot.');
-        }
-
-        return extractedText;
-      } catch (error) {
-        clearTimeout(timeoutId);
-        throw error;
+      if (!response.ok) {
+        throw new Error(`OCR API error: ${response.status} ${response.statusText}`);
       }
+
+      const data: OCRResponse = await response.json();
+
+      if (data.IsErroredOnProcessing) {
+        throw new Error(data.ErrorMessage || 'OCR processing failed');
+      }
+
+      const extractedText = data.ParsedResults?.[0]?.ParsedText?.trim() || '';
+      
+      if (!extractedText) {
+        throw new Error('No text found in the image. Please try with a clearer screenshot.');
+      }
+
+      return extractedText;
     } catch (error) {
       console.error('OCR API Error:', error);
       

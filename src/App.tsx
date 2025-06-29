@@ -12,6 +12,7 @@ import {
   ScrollView,
   TextInput,
   Image,
+  PermissionsAndroid,
 } from 'react-native';
 import { openaiService } from './services/openai';
 import { ocrService } from './services/ocr';
@@ -20,7 +21,7 @@ import { imagePickerService } from './services/imagePickerService';
 import BannerAdComponent from './components/BannerAd';
 import SplashScreen from 'react-native-splash-screen';
 
-// Safe icon component for web
+// Safe icon component for Android
 const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => {
   const iconMap: { [key: string]: string } = {
     person: '👤',
@@ -53,16 +54,14 @@ function ChatScreen() {
     setLoading(true);
     
     try {
-      // Check if user needs to watch ad (only on mobile)
-      if (Platform.OS !== 'web') {
-        const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
-        if (shouldShowAd) {
-          const adWatched = await adService.showRewardedAd();
-          if (!adWatched) {
-            Alert.alert('Ad Required', 'Please watch the ad to get your response.');
-            setLoading(false);
-            return;
-          }
+      // Check if user needs to watch ad
+      const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
+      if (shouldShowAd) {
+        const adWatched = await adService.showRewardedAd();
+        if (!adWatched) {
+          Alert.alert('Ad Required', 'Please watch the ad to get your response.');
+          setLoading(false);
+          return;
         }
       }
 
@@ -148,9 +147,7 @@ function ChatScreen() {
           <Text style={styles.infoText}>1. Enter the message you want to respond to</Text>
           <Text style={styles.infoText}>2. Choose your response style (flirty, witty, savage)</Text>
           <Text style={styles.infoText}>3. Get AI-generated perfect replies!</Text>
-          {Platform.OS === 'web' && (
-            <Text style={styles.infoText}>4. Web version - no ads required!</Text>
-          )}
+          <Text style={styles.infoText}>4. Watch ads to unlock unlimited responses</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -162,8 +159,32 @@ function ScreenshotScreen() {
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
+  const requestPermissions = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ]);
+      
+      return (
+        granted[PermissionsAndroid.PERMISSIONS.CAMERA] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] === PermissionsAndroid.RESULTS.GRANTED
+      );
+    } catch (err) {
+      console.warn(err);
+      return false;
+    }
+  };
+
   const handleImagePicker = async () => {
     try {
+      const hasPermissions = await requestPermissions();
+      if (!hasPermissions) {
+        Alert.alert('Permissions Required', 'Please grant camera and storage permissions to use this feature.');
+        return;
+      }
+
       const result = await imagePickerService.showImagePickerOptions();
       if (result) {
         setSelectedImage(result.uri);
@@ -183,16 +204,14 @@ function ScreenshotScreen() {
     setLoading(true);
 
     try {
-      // Check if user needs to watch ad (only on mobile)
-      if (Platform.OS !== 'web') {
-        const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
-        if (shouldShowAd) {
-          const adWatched = await adService.showRewardedAd();
-          if (!adWatched) {
-            Alert.alert('Ad Required', 'Please watch the ad to process your image.');
-            setLoading(false);
-            return;
-          }
+      // Check if user needs to watch ad
+      const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
+      if (shouldShowAd) {
+        const adWatched = await adService.showRewardedAd();
+        if (!adWatched) {
+          Alert.alert('Ad Required', 'Please watch the ad to process your image.');
+          setLoading(false);
+          return;
         }
       }
 
@@ -390,14 +409,6 @@ function AccountScreen() {
           <Text style={styles.premiumTitle}>Upgrade to Premium</Text>
           <Text style={styles.premiumSubtitle}>Unlimited responses • Ad-free • Priority support</Text>
         </TouchableOpacity>
-
-        {Platform.OS === 'web' && (
-          <View style={styles.webInfo}>
-            <Text style={styles.webInfoText}>
-              🌐 Web Version - Enjoy ad-free experience!
-            </Text>
-          </View>
-        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -406,16 +417,12 @@ function AccountScreen() {
 function App(): React.JSX.Element {
   useEffect(() => {
     // Hide splash screen after app loads
-    if (Platform.OS !== 'web') {
-      setTimeout(() => {
-        SplashScreen.hide();
-      }, 2000);
-    }
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 2000);
 
-    // Initialize ads service (only on mobile)
-    if (Platform.OS !== 'web') {
-      adService.initialize().catch(console.error);
-    }
+    // Initialize ads service
+    adService.initialize().catch(console.error);
   }, []);
 
   return (
@@ -455,8 +462,7 @@ function App(): React.JSX.Element {
           <Tab.Screen name="Chat" component={ChatScreen} />
           <Tab.Screen name="History" component={HistoryScreen} />
         </Tab.Navigator>
-        {/* Only show banner ad on mobile platforms */}
-        {Platform.OS !== 'web' && <BannerAdComponent />}
+        <BannerAdComponent />
       </View>
     </NavigationContainer>
   );
@@ -474,7 +480,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
-    paddingTop: Platform.OS === 'web' ? 20 : 60,
+    paddingTop: 60,
   },
   title: {
     fontSize: 28,
@@ -788,27 +794,13 @@ const styles = StyleSheet.create({
     color: '#718096',
     textAlign: 'center',
   },
-  webInfo: {
-    backgroundColor: '#E6FFFA',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: '#81E6D9',
-  },
-  webInfoText: {
-    fontSize: 14,
-    color: '#234E52',
-    textAlign: 'center',
-    fontWeight: '500',
-  },
   tabBar: {
     backgroundColor: '#FFFFFF',
     borderTopColor: '#E2E8F0',
     borderTopWidth: 1,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+    paddingBottom: 10,
     paddingTop: 10,
-    height: Platform.OS === 'ios' ? 90 : 70,
+    height: 70,
   },
   tabBarLabel: {
     fontSize: 12,

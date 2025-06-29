@@ -1,17 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, Text, Platform } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import { adService } from '../services/ads';
 
 export default function BannerAdComponent() {
-  // Disable ads completely on web
-  if (Platform.OS === 'web') {
-    return null;
-  }
-
-  // For native platforms, try to load the actual AdMob component
   try {
-    const { BannerAd, BannerAdSize } = require('react-native-google-mobile-ads');
-    const { adService } = require('../services/ads');
-
     return (
       <View style={styles.container}>
         <BannerAd

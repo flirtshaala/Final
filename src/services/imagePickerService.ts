@@ -1,6 +1,5 @@
-import { Platform, Alert, PermissionsAndroid } from 'react-native';
+import { Alert, PermissionsAndroid } from 'react-native';
 import { launchImageLibrary, launchCamera, ImagePickerResponse, MediaType } from 'react-native-image-picker';
-import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 export interface ImagePickerResult {
   uri: string;
@@ -11,27 +10,18 @@ export interface ImagePickerResult {
 
 class ImagePickerService {
   async requestCameraPermission(): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      return true; // Web doesn't need camera permissions for file input
-    }
-
     try {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: 'Camera Permission',
-            message: 'FlirtShaala needs access to your camera to take photos.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } else {
-        const result = await request(PERMISSIONS.IOS.CAMERA);
-        return result === RESULTS.GRANTED;
-      }
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'FlirtShaala needs access to your camera to take photos.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
     } catch (error) {
       console.error('Camera permission error:', error);
       return false;
@@ -39,27 +29,18 @@ class ImagePickerService {
   }
 
   async requestStoragePermission(): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      return true; // Web doesn't need storage permissions for file input
-    }
-
     try {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission',
-            message: 'FlirtShaala needs access to your photos to select images.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } else {
-        const result = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-        return result === RESULTS.GRANTED;
-      }
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission',
+          message: 'FlirtShaala needs access to your photos to select images.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
     } catch (error) {
       console.error('Storage permission error:', error);
       return false;
@@ -67,10 +48,6 @@ class ImagePickerService {
   }
 
   async pickImageFromGallery(): Promise<ImagePickerResult | null> {
-    if (Platform.OS === 'web') {
-      return this.pickImageFromWeb();
-    }
-
     const hasPermission = await this.requestStoragePermission();
     if (!hasPermission) {
       Alert.alert('Permission Required', 'Please grant storage permission to select images.');
@@ -107,11 +84,6 @@ class ImagePickerService {
   }
 
   async takePhoto(): Promise<ImagePickerResult | null> {
-    if (Platform.OS === 'web') {
-      Alert.alert('Not Supported', 'Camera is not supported on web. Please use gallery instead.');
-      return null;
-    }
-
     const hasPermission = await this.requestCameraPermission();
     if (!hasPermission) {
       Alert.alert('Permission Required', 'Please grant camera permission to take photos.');
@@ -147,43 +119,7 @@ class ImagePickerService {
     });
   }
 
-  private pickImageFromWeb(): Promise<ImagePickerResult | null> {
-    return new Promise((resolve) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (event: any) => {
-        const file = event.target.files[0];
-        if (file) {
-          if (file.size > 10 * 1024 * 1024) { // 10MB limit
-            Alert.alert('File Too Large', 'Please select an image smaller than 10MB.');
-            resolve(null);
-            return;
-          }
-          
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            resolve({
-              uri: e.target?.result as string,
-              type: file.type,
-              fileName: file.name,
-              fileSize: file.size,
-            });
-          };
-          reader.readAsDataURL(file);
-        } else {
-          resolve(null);
-        }
-      };
-      input.click();
-    });
-  }
-
   showImagePickerOptions(): Promise<ImagePickerResult | null> {
-    if (Platform.OS === 'web') {
-      return this.pickImageFromGallery();
-    }
-
     return new Promise((resolve) => {
       Alert.alert(
         'Select Image',

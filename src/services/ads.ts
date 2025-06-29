@@ -1,22 +1,20 @@
-import { Platform } from 'react-native';
+import mobileAds, { 
+  BannerAd, 
+  BannerAdSize, 
+  TestIds, 
+  InterstitialAd, 
+  RewardedAd, 
+  AdEventType, 
+  RewardedAdEventType 
+} from 'react-native-google-mobile-ads';
 
-// Web-safe ads service
 class AdService {
   private isInitialized = false;
 
   async initialize() {
     if (this.isInitialized) return;
     
-    if (Platform.OS === 'web') {
-      // Mock initialization for web
-      this.isInitialized = true;
-      console.log('AdMob mock initialized for web');
-      return;
-    }
-
     try {
-      // Import native ads only on mobile platforms
-      const mobileAds = require('react-native-google-mobile-ads').default;
       await mobileAds().initialize();
       this.isInitialized = true;
       console.log('AdMob initialized successfully');
@@ -26,44 +24,24 @@ class AdService {
   }
 
   getBannerAdUnitId() {
-    if (Platform.OS === 'web') {
-      return 'web-mock-banner-id';
-    }
-
-    const platform = Platform.OS as 'android' | 'ios';
-    const envKey = `EXPO_PUBLIC_ADMOB_BANNER_${platform.toUpperCase()}`;
-    const adUnitId = process.env[envKey];
+    const adUnitId = process.env.EXPO_PUBLIC_ADMOB_BANNER_ANDROID;
     
-    if (!adUnitId || adUnitId === 'your_banner_ad_unit_id_' + platform) {
-      // Return test IDs if not configured
-      return platform === 'android' 
-        ? 'ca-app-pub-3940256099942544/6300978111'
-        : 'ca-app-pub-3940256099942544/2934735716';
+    if (!adUnitId || adUnitId === 'your_banner_ad_unit_id_android') {
+      // Return test ID if not configured
+      return TestIds.BANNER;
     }
     
     return adUnitId;
   }
 
   async showRewardedAd(): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      // Mock for web - simulate watching an ad
-      console.log('Mock rewarded ad shown on web');
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(true), 2000);
-      });
-    }
-
     if (!this.isInitialized) {
       await this.initialize();
     }
 
     try {
-      const { RewardedAd, TestIds, AdEventType, RewardedAdEventType } = require('react-native-google-mobile-ads');
-      
       return new Promise((resolve) => {
-        const platform = Platform.OS as 'android' | 'ios';
-        const envKey = `EXPO_PUBLIC_ADMOB_REWARDED_${platform.toUpperCase()}`;
-        const adUnitId = process.env[envKey] || TestIds.REWARDED;
+        const adUnitId = process.env.EXPO_PUBLIC_ADMOB_REWARDED_ANDROID || TestIds.REWARDED;
         
         const rewardedAd = RewardedAd.createForAdRequest(adUnitId);
         
@@ -102,25 +80,13 @@ class AdService {
   }
 
   async showInterstitialAd(): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      // Mock for web - simulate showing an interstitial ad
-      console.log('Mock interstitial ad shown on web');
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(true), 1000);
-      });
-    }
-
     if (!this.isInitialized) {
       await this.initialize();
     }
 
     try {
-      const { InterstitialAd, TestIds, AdEventType } = require('react-native-google-mobile-ads');
-      
       return new Promise((resolve) => {
-        const platform = Platform.OS as 'android' | 'ios';
-        const envKey = `EXPO_PUBLIC_ADMOB_INTERSTITIAL_${platform.toUpperCase()}`;
-        const adUnitId = process.env[envKey] || TestIds.INTERSTITIAL;
+        const adUnitId = process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ANDROID || TestIds.INTERSTITIAL;
         
         const interstitialAd = InterstitialAd.createForAdRequest(adUnitId);
         

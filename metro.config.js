@@ -5,7 +5,6 @@ const config = {
     alias: {
       '@': './src',
     },
-    platforms: ['ios', 'android', 'native', 'web'],
   },
   transformer: {
     inlineRequires: false,

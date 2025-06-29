@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
@@ -23,7 +24,7 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!(react-native-image-picker|react-native-document-picker|react-native-fs|react-native-keychain|react-native-permissions|react-native-device-info|@react-native-camera-roll\/camera-roll|@react-native-community\/netinfo|@react-native-google-signin\/google-signin|react-native-gesture-handler|react-native-safe-area-context|react-native-screens|react-native-splash-screen|react-native-svg|react-native-vector-icons))/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -72,6 +73,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
       inject: true,
+    }),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(process.env),
     }),
   ],
   devServer: {

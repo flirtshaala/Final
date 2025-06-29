@@ -1,46 +1,27 @@
-# FlirtShaala - AI-Powered Chat Response Generator
+# FlirtShaala - Android APK Only
 
-FlirtShaala is a cross-platform mobile application that helps users craft perfect responses for their dating chats and conversations using AI technology.
+FlirtShaala is a native Android application that helps users craft perfect responses for their dating chats and conversations using AI technology.
 
 ## 🚀 Features
 
 - **AI-Powered Responses**: Generate flirty, witty, or savage responses using OpenAI GPT
 - **Screenshot Analysis**: Upload chat screenshots and get AI-generated replies
-- **Multi-Platform**: Runs on Android, iOS, and Web
+- **Native Android**: Pure React Native CLI implementation
 - **Smart Language Detection**: Supports English, Hindi, Hinglish, and Marathi
 - **Response History**: Track and manage your generated responses
-- **Ad-Free Web Experience**: No ads on web version
-- **Premium Features**: Unlimited responses and ad-free mobile experience
+- **AdMob Integration**: Monetization with banner, rewarded, and interstitial ads
 
-## 📱 Platforms
+## 📱 Android Only
 
-### ✅ Web (Bolt Preview Ready)
-- Runs in browser with React Native Web
-- No ads, full functionality
-- File upload for screenshot analysis
-- Real-time AI response generation
-
-### ✅ Android
-- Native Android app with Hermes engine
-- AdMob integration for monetization
-- Camera and gallery access for screenshots
-- Full offline capability
-
-### ✅ iOS
-- Native iOS app with optimized performance
-- AdMob integration
-- Camera and photo library access
-- iOS-specific UI adaptations
+This is a **pure Android APK application** built with React Native CLI. No web support, no Expo dependencies.
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React Native 0.73.6
+- **Framework**: React Native 0.73.6 (CLI)
 - **Navigation**: React Navigation 6
 - **AI Service**: OpenAI GPT-3.5-turbo
 - **OCR**: OCR.space API
-- **Database**: Supabase (optional)
-- **Ads**: Google AdMob (mobile only)
-- **Web**: React Native Web + Webpack
+- **Ads**: Google AdMob
 - **State Management**: React Context + Hooks
 
 ## 🔧 Setup & Installation
@@ -48,8 +29,8 @@ FlirtShaala is a cross-platform mobile application that helps users craft perfec
 ### Prerequisites
 - Node.js 18+
 - React Native CLI
-- Android Studio (for Android)
-- Xcode (for iOS)
+- Android Studio
+- Java Development Kit (JDK) 11+
 
 ### 1. Clone & Install
 ```bash
@@ -64,26 +45,11 @@ cp .env.example .env
 # Edit .env with your API keys
 ```
 
-### 3. Platform-Specific Setup
-
-#### Web Development
-```bash
-npm run web
-# Opens on http://localhost:3000
-```
-
-#### Android Development
+### 3. Android Development
 ```bash
 # Clean and build
 npm run clean:android
 npm run android
-```
-
-#### iOS Development
-```bash
-# Install iOS dependencies
-cd ios && pod install && cd ..
-npm run ios
 ```
 
 ## 🔑 API Keys Required
@@ -98,96 +64,74 @@ npm run ios
   - Get from: https://ocr.space/ocrapi
   - Add to: `EXPO_PUBLIC_OCR_API_KEY`
 
-- **AdMob App ID**: For mobile ads (Android/iOS only)
+- **AdMob App ID**: For mobile ads
   - Get from: https://admob.google.com/
   - Add to: `EXPO_PUBLIC_ADMOB_APP_ID`
 
-- **Supabase**: For user authentication and data sync
-  - Get from: https://app.supabase.io/
-  - Add to: `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+## 🚀 Build Commands
 
-## 🚀 Deployment
-
-### Web Deployment
+### Development:
 ```bash
-npm run build:web
-# Deploy dist/ folder to Netlify, Vercel, or any static hosting
+npx react-native run-android
 ```
 
-### Android Release
+### Production APK:
 ```bash
 npm run build:android
-# Generates APK/AAB in android/app/build/outputs/
+# APK location: android/app/build/outputs/apk/release/app-release.apk
 ```
 
-### iOS Release
+### Clean Build:
 ```bash
-npm run build:ios
-# Generates archive for App Store submission
+npm run clean
+npm run clean:android
 ```
 
-## 🎯 Key Features by Platform
+## 🔧 Production Setup
 
-| Feature | Web | Android | iOS |
-|---------|-----|---------|-----|
-| AI Chat Responses | ✅ | ✅ | ✅ |
-| Screenshot Analysis | ✅ | ✅ | ✅ |
-| Response History | ✅ | ✅ | ✅ |
-| User Authentication | ✅ | ✅ | ✅ |
-| AdMob Ads | ❌ | ✅ | ✅ |
-| Camera Access | ❌ | ✅ | ✅ |
-| File Upload | ✅ | ✅ | ✅ |
-| Offline Mode | ❌ | ✅ | ✅ |
+### 1. Generate Release Keystore
+```bash
+cd android/app
+keytool -genkeypair -v -storetype PKCS12 -keystore my-upload-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+```
+
+### 2. Configure Signing in `android/gradle.properties`
+```properties
+MYAPP_UPLOAD_STORE_FILE=my-upload-key.keystore
+MYAPP_UPLOAD_KEY_ALIAS=my-key-alias
+MYAPP_UPLOAD_STORE_PASSWORD=your_password
+MYAPP_UPLOAD_KEY_PASSWORD=your_password
+```
+
+### 3. Build Release APK
+```bash
+cd android && ./gradlew assembleRelease
+```
+
+## 🎯 Key Features
+
+✅ **AI Chat Responses** - Generate perfect replies with OpenAI
+✅ **Screenshot Analysis** - OCR text extraction and AI analysis
+✅ **Response History** - Track generated responses
+✅ **AdMob Ads** - Banner, rewarded, and interstitial ads
+✅ **Camera Access** - Native image picker with camera/gallery
+✅ **Offline Mode** - Works without internet for basic features
+✅ **Native Performance** - Hermes engine enabled
+✅ **Production Ready** - ProGuard/R8 optimization
 
 ## 🔒 Privacy & Security
 
 - No user data stored without consent
 - API keys secured in environment variables
-- Optional user authentication via Supabase
 - Local storage for guest users
 - HTTPS-only API communications
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Web build fails**: Check babel and webpack configurations
-2. **Android build fails**: Clean project and rebuild
-3. **iOS build fails**: Update pods and check Xcode settings
-4. **API errors**: Verify API keys in .env file
-5. **AdMob issues**: Ensure proper app ID configuration
-
-### Debug Commands
-```bash
-# Clean all platforms
-npm run clean
-
-# Reset Metro cache
-npx react-native start --reset-cache
-
-# Check React Native info
-npx react-native info
-```
-
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 📞 Support
-
-For support and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section
-- Review the API documentation
+This project is licensed under the MIT License.
 
 ---
 
 **FlirtShaala** - Your AI wingman for perfect responses! 💕
+
+**Android APK Only - No Web Support**

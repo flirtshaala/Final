@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
-    "ios": "npx react-native run-ios",
     "start": "npx react-native start",
     "build:android": "cd android && ./gradlew assembleRelease",
     "build:android-debug": "cd android && ./gradlew assembleDebug",

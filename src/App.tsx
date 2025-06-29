@@ -14,28 +14,13 @@ import {
   Image,
   PermissionsAndroid,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { openaiService } from './services/openai';
 import { ocrService } from './services/ocr';
 import { adService } from './services/ads';
 import { imagePickerService } from './services/imagePickerService';
 import BannerAdComponent from './components/BannerAd';
 import SplashScreen from 'react-native-splash-screen';
-
-// Safe icon component for Android
-const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => {
-  const iconMap: { [key: string]: string } = {
-    person: '👤',
-    'camera-alt': '📷',
-    chat: '💬',
-    history: '📝',
-  };
-  
-  return (
-    <Text style={{ fontSize: 24, opacity: focused ? 1 : 0.6 }}>
-      {iconMap[name] || '📱'}
-    </Text>
-  );
-};
 
 const Tab = createBottomTabNavigator();
 
@@ -160,6 +145,8 @@ function ScreenshotScreen() {
   const [loading, setLoading] = React.useState(false);
 
   const requestPermissions = async () => {
+    if (Platform.OS !== 'android') return true;
+    
     try {
       const granted = await PermissionsAndroid.requestMultiple([
         PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -431,7 +418,7 @@ function App(): React.JSX.Element {
         <Tab.Navigator
           screenOptions={({ route }) => ({
             headerShown: false,
-            tabBarIcon: ({ focused }) => {
+            tabBarIcon: ({ focused, color, size }) => {
               let iconName = '';
 
               switch (route.name) {
@@ -449,7 +436,7 @@ function App(): React.JSX.Element {
                   break;
               }
 
-              return <TabIcon name={iconName} focused={focused} />;
+              return <Icon name={iconName} size={size} color={color} />;
             },
             tabBarActiveTintColor: '#FF6B7A',
             tabBarInactiveTintColor: '#718096',

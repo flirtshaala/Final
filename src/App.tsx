@@ -11,11 +11,14 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Image,
 } from 'react-native';
 import { openaiService } from './services/openai';
 import { ocrService } from './services/ocr';
 import { adService } from './services/ads';
+import { imagePickerService } from './services/imagePickerService';
 import BannerAdComponent from './components/BannerAd';
+import SplashScreen from 'react-native-splash-screen';
 
 // Safe icon component for web
 const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => {
@@ -159,30 +162,15 @@ function ScreenshotScreen() {
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
-  const handleUpload = () => {
-    if (Platform.OS === 'web') {
-      // Web file input simulation
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (event: any) => {
-        const file = event.target.files[0];
-        if (file) {
-          if (file.size > 10 * 1024 * 1024) { // 10MB limit
-            Alert.alert('File Too Large', 'Please select an image smaller than 10MB.');
-            return;
-          }
-          
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            setSelectedImage(e.target?.result as string);
-          };
-          reader.readAsDataURL(file);
-        }
-      };
-      input.click();
-    } else {
-      Alert.alert('Image Picker', 'Image picker will be implemented for native platforms');
+  const handleImagePicker = async () => {
+    try {
+      const result = await imagePickerService.showImagePickerOptions();
+      if (result) {
+        setSelectedImage(result.uri);
+      }
+    } catch (error) {
+      console.error('Image picker error:', error);
+      Alert.alert('Error', 'Failed to select image. Please try again.');
     }
   };
 
@@ -249,13 +237,11 @@ function ScreenshotScreen() {
         
         {selectedImage ? (
           <View style={styles.imagePreview}>
-            {Platform.OS === 'web' && (
-              <img 
-                src={selectedImage} 
-                alt="Selected" 
-                style={{ width: '100%', height: 200, objectFit: 'cover', borderRadius: 12 }}
-              />
-            )}
+            <Image 
+              source={{ uri: selectedImage }} 
+              style={styles.previewImage}
+              resizeMode="cover"
+            />
             <TouchableOpacity 
               style={[styles.processButton, loading && styles.processButtonDisabled]} 
               onPress={handleProcessImage}
@@ -265,7 +251,7 @@ function ScreenshotScreen() {
                 {loading ? 'Processing...' : 'Process Image'}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.changeImageButton} onPress={handleUpload}>
+            <TouchableOpacity style={styles.changeImageButton} onPress={handleImagePicker}>
               <Text style={styles.changeImageText}>Change Image</Text>
             </TouchableOpacity>
           </View>
@@ -273,7 +259,7 @@ function ScreenshotScreen() {
           <View style={styles.uploadArea}>
             <Text style={styles.uploadIcon}>📱</Text>
             <Text style={styles.uploadText}>Tap to upload screenshot</Text>
-            <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+            <TouchableOpacity style={styles.uploadButton} onPress={handleImagePicker}>
               <Text style={styles.buttonText}>Choose Image</Text>
             </TouchableOpacity>
           </View>
@@ -419,10 +405,13 @@ function AccountScreen() {
 
 function App(): React.JSX.Element {
   useEffect(() => {
-    console.log('🚀 FlirtShaala App initialized');
-    console.log('📱 Platform:', Platform.OS);
-    console.log('🌐 Running in:', Platform.OS === 'web' ? 'Browser' : 'Native App');
-    
+    // Hide splash screen after app loads
+    if (Platform.OS !== 'web') {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 2000);
+    }
+
     // Initialize ads service (only on mobile)
     if (Platform.OS !== 'web') {
       adService.initialize().catch(console.error);
@@ -620,6 +609,12 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     marginTop: 20,
+  },
+  previewImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   processButton: {
     backgroundColor: '#FF6B7A',

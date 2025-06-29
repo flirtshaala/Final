@@ -5,7 +5,7 @@ apply plugin: "com.facebook.react"
  * This is the configuration block to customize your React Native Android app.
  */
 react {
-    enableHermes = false  // Disabled for better Bolt compatibility
+    enableHermes = true  // Enable Hermes for production
 }
 
 /**
@@ -17,7 +17,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -34,10 +34,12 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         
-        buildConfigField "boolean", "IS_HERMES_ENABLED", "false"
+        buildConfigField "boolean", "IS_HERMES_ENABLED", "true"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false"
+        
+        multiDexEnabled true
     }
 
     splits {
@@ -56,6 +58,20 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            } else {
+                // Fallback to debug keystore for development
+                storeFile file('debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
     }
     
     buildTypes {
@@ -63,27 +79,51 @@ android {
             signingConfig signingConfigs.debug
             debuggable true
             minifyEnabled false
+            applicationIdSuffix ".debug"
         }
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+            debuggable false
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            shrinkResources true
         }
+    }
+    
+    packagingOptions {
+        pickFirst "lib/x86/libc++_shared.so"
+        pickFirst "lib/x86_64/libc++_shared.so"
+        pickFirst "lib/arm64-v8a/libc++_shared.so"
+        pickFirst "lib/armeabi-v7a/libc++_shared.so"
     }
 }
 
 dependencies {
     implementation("com.facebook.react:react-android")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    implementation("androidx.multidex:multidex:2.0.1")
 
+    // Google Play Services
+    implementation 'com.google.android.gms:play-services-ads:22.6.0'
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    
+    // Permissions
+    implementation 'androidx.core:core:1.12.0'
+    
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
     
-    // Use JSC instead of Hermes for better compatibility
-    implementation jscFlavor
+    // Use Hermes engine
+    if (enableHermes) {
+        implementation("com.facebook.react:hermes-engine:+") {
+            exclude group:'com.facebook.fbjni'
+        }
+    } else {
+        implementation jscFlavor
+    }
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

@@ -15,12 +15,12 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "Flirtshaala";
+    return "flirtshaala";
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    SplashScreen.show(this);
+    SplashScreen.show(this, R.style.SplashScreenTheme, false);
     super.onCreate(savedInstanceState);
   }
 

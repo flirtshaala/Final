@@ -1,4 +1,34 @@
 {
   "name": "flirtshaala",
-  "displayName": "FlirtShaala"
+  "displayName": "FlirtShaala",
+  "expo": {
+    "name": "FlirtShaala",
+    "slug": "flirtshaala",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B7A"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6B7A"
+      },
+      "package": "com.flirtshaala"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "webpack"
+    }
+  }
 }

@@ -4,6 +4,10 @@ interface OpenAIResponse {
       content: string;
     };
   }[];
+  error?: {
+    message: string;
+    type: string;
+  };
 }
 
 export type ResponseType = 'flirty' | 'witty' | 'savage';
@@ -41,8 +45,6 @@ class OpenAIService {
     chatContext: string, 
     responseType: ResponseType = 'flirty'
   ): Promise<string> {
-    console.log('🤖 OpenAI Service called with:', { chatContext, responseType });
-
     if (!this.apiKey || this.apiKey === 'your_openai_key_here' || this.apiKey === '') {
       console.log('🎭 No OpenAI API key, using mock response');
       return this.getMockResponse(responseType);
@@ -76,8 +78,6 @@ Chat context: "${cleanedContext}"
 Generate ONLY the response text, no explanations, quotes, or meta-commentary. Respond in the SAME language and script as the input.`;
 
     try {
-      console.log('🌐 Making OpenAI API request...');
-      
       const response = await fetch(this.baseURL, {
         method: 'POST',
         headers: {
@@ -98,16 +98,27 @@ Generate ONLY the response text, no explanations, quotes, or meta-commentary. Re
       });
       
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
         if (response.status === 401) {
           throw new Error('Invalid OpenAI API key. Please check your configuration.');
         }
         if (response.status === 429) {
           throw new Error('API rate limit exceeded. Please try again in a moment.');
         }
-        throw new Error(`OpenAI API error: ${response.status}`);
+        if (response.status === 403) {
+          throw new Error('API access forbidden. Please check your API key permissions.');
+        }
+        
+        throw new Error(errorData.error?.message || `OpenAI API error: ${response.status}`);
       }
 
       const data: OpenAIResponse = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+      
       const generatedResponse = data.choices[0]?.message?.content?.trim();
       
       if (!generatedResponse) {
@@ -124,8 +135,12 @@ Generate ONLY the response text, no explanations, quotes, or meta-commentary. Re
     } catch (error) {
       console.error('❌ OpenAI API Error:', error);
       
-      // Return mock response on error
-      console.log('🎭 Falling back to mock response due to error');
+      // Return mock response on error with error message
+      if (error instanceof Error) {
+        throw error; // Re-throw to show user the actual error
+      }
+      
+      console.log('🎭 Falling back to mock response due to unknown error');
       return this.getMockResponse(responseType);
     }
   }

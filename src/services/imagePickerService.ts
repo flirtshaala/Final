@@ -1,5 +1,18 @@
-import { Alert, PermissionsAndroid } from 'react-native';
-import { launchImageLibrary, launchCamera, ImagePickerResponse, MediaType } from 'react-native-image-picker';
+import { Alert, PermissionsAndroid, Platform } from 'react-native';
+
+// Only import image picker on native platforms
+let launchImageLibrary: any = null;
+let launchCamera: any = null;
+
+if (Platform.OS !== 'web') {
+  try {
+    const imagePickerModule = require('react-native-image-picker');
+    launchImageLibrary = imagePickerModule.launchImageLibrary;
+    launchCamera = imagePickerModule.launchCamera;
+  } catch (error) {
+    console.warn('Image picker not available on this platform');
+  }
+}
 
 export interface ImagePickerResult {
   uri: string;
@@ -10,6 +23,10 @@ export interface ImagePickerResult {
 
 class ImagePickerService {
   async requestCameraPermission(): Promise<boolean> {
+    if (Platform.OS === 'web') {
+      return true; // Web doesn't need explicit camera permission
+    }
+
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -29,6 +46,10 @@ class ImagePickerService {
   }
 
   async requestStoragePermission(): Promise<boolean> {
+    if (Platform.OS === 'web') {
+      return true; // Web doesn't need explicit storage permission
+    }
+
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
@@ -48,6 +69,15 @@ class ImagePickerService {
   }
 
   async pickImageFromGallery(): Promise<ImagePickerResult | null> {
+    if (Platform.OS === 'web') {
+      return this.pickImageFromWeb();
+    }
+
+    if (!launchImageLibrary) {
+      Alert.alert('Error', 'Image picker not available on this platform');
+      return null;
+    }
+
     const hasPermission = await this.requestStoragePermission();
     if (!hasPermission) {
       Alert.alert('Permission Required', 'Please grant storage permission to select images.');
@@ -56,13 +86,13 @@ class ImagePickerService {
 
     return new Promise((resolve) => {
       const options = {
-        mediaType: 'photo' as MediaType,
+        mediaType: 'photo' as any,
         quality: 0.8,
         maxWidth: 1024,
         maxHeight: 1024,
       };
 
-      launchImageLibrary(options, (response: ImagePickerResponse) => {
+      launchImageLibrary(options, (response: any) => {
         if (response.didCancel || response.errorMessage) {
           resolve(null);
           return;
@@ -84,6 +114,16 @@ class ImagePickerService {
   }
 
   async takePhoto(): Promise<ImagePickerResult | null> {
+    if (Platform.OS === 'web') {
+      Alert.alert('Camera Not Available', 'Camera capture is not available on web. Please use the gallery option.');
+      return null;
+    }
+
+    if (!launchCamera) {
+      Alert.alert('Error', 'Camera not available on this platform');
+      return null;
+    }
+
     const hasPermission = await this.requestCameraPermission();
     if (!hasPermission) {
       Alert.alert('Permission Required', 'Please grant camera permission to take photos.');
@@ -92,13 +132,13 @@ class ImagePickerService {
 
     return new Promise((resolve) => {
       const options = {
-        mediaType: 'photo' as MediaType,
+        mediaType: 'photo' as any,
         quality: 0.8,
         maxWidth: 1024,
         maxHeight: 1024,
       };
 
-      launchCamera(options, (response: ImagePickerResponse) => {
+      launchCamera(options, (response: any) => {
         if (response.didCancel || response.errorMessage) {
           resolve(null);
           return;
@@ -119,7 +159,39 @@ class ImagePickerService {
     });
   }
 
+  private async pickImageFromWeb(): Promise<ImagePickerResult | null> {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      
+      input.onchange = (event: any) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            resolve({
+              uri: e.target.result,
+              type: file.type,
+              fileName: file.name,
+              fileSize: file.size,
+            });
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resolve(null);
+        }
+      };
+      
+      input.click();
+    });
+  }
+
   showImagePickerOptions(): Promise<ImagePickerResult | null> {
+    if (Platform.OS === 'web') {
+      return this.pickImageFromWeb();
+    }
+
     return new Promise((resolve) => {
       Alert.alert(
         'Select Image',

@@ -1,18 +1,38 @@
-import mobileAds, { 
-  BannerAd, 
-  BannerAdSize, 
-  TestIds, 
-  InterstitialAd, 
-  RewardedAd, 
-  AdEventType, 
-  RewardedAdEventType 
-} from 'react-native-google-mobile-ads';
+import { Platform } from 'react-native';
+
+// Only import AdMob on native platforms
+let mobileAds: any = null;
+let TestIds: any = null;
+let InterstitialAd: any = null;
+let RewardedAd: any = null;
+let AdEventType: any = null;
+let RewardedAdEventType: any = null;
+
+if (Platform.OS !== 'web') {
+  try {
+    const adModule = require('react-native-google-mobile-ads');
+    mobileAds = adModule.default;
+    TestIds = adModule.TestIds;
+    InterstitialAd = adModule.InterstitialAd;
+    RewardedAd = adModule.RewardedAd;
+    AdEventType = adModule.AdEventType;
+    RewardedAdEventType = adModule.RewardedAdEventType;
+  } catch (error) {
+    console.warn('AdMob not available on this platform');
+  }
+}
 
 class AdService {
   private isInitialized = false;
+  private isWebPlatform = Platform.OS === 'web';
 
   async initialize() {
-    if (this.isInitialized) return;
+    if (this.isWebPlatform) {
+      console.log('Ads disabled on web platform');
+      return;
+    }
+
+    if (this.isInitialized || !mobileAds) return;
     
     try {
       await mobileAds().initialize();
@@ -24,19 +44,32 @@ class AdService {
   }
 
   getBannerAdUnitId() {
+    if (this.isWebPlatform) {
+      return null;
+    }
+
     const adUnitId = process.env.EXPO_PUBLIC_ADMOB_BANNER_ANDROID;
     
     if (!adUnitId || adUnitId === 'your_banner_ad_unit_id_android') {
-      // Return test ID if not configured
-      return TestIds.BANNER;
+      return TestIds?.BANNER || null;
     }
     
     return adUnitId;
   }
 
   async showRewardedAd(): Promise<boolean> {
+    if (this.isWebPlatform) {
+      console.log('Rewarded ads not available on web, granting reward');
+      return true; // Grant reward on web for better UX
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
+    }
+
+    if (!RewardedAd || !TestIds) {
+      console.warn('AdMob not available, granting reward');
+      return true;
     }
 
     try {
@@ -75,13 +108,23 @@ class AdService {
       });
     } catch (error) {
       console.error('Error showing rewarded ad:', error);
-      return false;
+      return true; // Grant reward on error for better UX
     }
   }
 
   async showInterstitialAd(): Promise<boolean> {
+    if (this.isWebPlatform) {
+      console.log('Interstitial ads not available on web');
+      return true;
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
+    }
+
+    if (!InterstitialAd || !TestIds) {
+      console.warn('AdMob not available');
+      return true;
     }
 
     try {
@@ -110,7 +153,7 @@ class AdService {
       });
     } catch (error) {
       console.error('Error showing interstitial ad:', error);
-      return false;
+      return true;
     }
   }
 }

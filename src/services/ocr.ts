@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 interface OCRResponse {
   ParsedResults: {
     ParsedText: string;
@@ -21,13 +23,30 @@ class OCRService {
         return this.getMockExtractedText();
       }
 
-      // Create FormData for native platforms
-      const formData = new FormData();
-      formData.append('file', {
-        uri: imageUri,
-        type: 'image/jpeg',
-        name: 'chat_screenshot.jpg',
-      } as any);
+      let formData: FormData;
+
+      if (Platform.OS === 'web') {
+        // Handle web file upload
+        formData = new FormData();
+        
+        if (imageUri.startsWith('data:')) {
+          // Convert data URL to blob for web
+          const response = await fetch(imageUri);
+          const blob = await response.blob();
+          formData.append('file', blob, 'chat_screenshot.jpg');
+        } else {
+          throw new Error('Invalid image format for web');
+        }
+      } else {
+        // Handle native file upload
+        formData = new FormData();
+        formData.append('file', {
+          uri: imageUri,
+          type: 'image/jpeg',
+          name: 'chat_screenshot.jpg',
+        } as any);
+      }
+
       formData.append('apikey', this.apiKey);
       formData.append('language', 'eng');
       formData.append('isOverlayRequired', 'false');

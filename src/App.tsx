@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -20,15 +20,25 @@ import { ocrService } from './services/ocr';
 import { adService } from './services/ads';
 import { imagePickerService } from './services/imagePickerService';
 import BannerAdComponent from './components/BannerAd';
-import SplashScreen from 'react-native-splash-screen';
+
+// Only import splash screen on native platforms
+let SplashScreen: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    SplashScreen = require('react-native-splash-screen').default;
+  } catch (error) {
+    console.warn('Splash screen not available on this platform');
+  }
+}
 
 const Tab = createBottomTabNavigator();
 
 // Chat Tab Component
 function ChatScreen() {
-  const [message, setMessage] = React.useState('');
-  const [responseType, setResponseType] = React.useState<'flirty' | 'witty' | 'savage'>('flirty');
-  const [loading, setLoading] = React.useState(false);
+  const [message, setMessage] = useState('');
+  const [responseType, setResponseType] = useState<'flirty' | 'witty' | 'savage'>('flirty');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleGenerateResponse = async () => {
     if (!message.trim()) {
@@ -37,16 +47,19 @@ function ChatScreen() {
     }
 
     setLoading(true);
+    setError(null);
     
     try {
-      // Check if user needs to watch ad
-      const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
-      if (shouldShowAd) {
-        const adWatched = await adService.showRewardedAd();
-        if (!adWatched) {
-          Alert.alert('Ad Required', 'Please watch the ad to get your response.');
-          setLoading(false);
-          return;
+      // Check if user needs to watch ad (only on mobile)
+      if (Platform.OS !== 'web') {
+        const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
+        if (shouldShowAd) {
+          const adWatched = await adService.showRewardedAd();
+          if (!adWatched) {
+            Alert.alert('Ad Required', 'Please watch the ad to get your response.');
+            setLoading(false);
+            return;
+          }
         }
       }
 
@@ -61,13 +74,27 @@ function ChatScreen() {
             Alert.alert('Copied!', 'Response copied to clipboard');
           }
         },
+        { 
+          text: 'Retry', 
+          onPress: () => handleGenerateResponse(),
+          style: 'default'
+        },
         { text: 'OK' }
       ]);
       
       setMessage('');
     } catch (error: any) {
       console.error('Generate response error:', error);
-      Alert.alert('Error', error.message || 'Failed to generate response. Please try again.');
+      setError(error.message || 'Failed to generate response');
+      
+      Alert.alert(
+        'Error', 
+        error.message || 'Failed to generate response. Please try again.',
+        [
+          { text: 'Retry', onPress: () => handleGenerateResponse() },
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
     } finally {
       setLoading(false);
     }
@@ -78,6 +105,18 @@ function ChatScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>FlirtShaala Chat</Text>
         <Text style={styles.subtitle}>Generate perfect responses with AI</Text>
+        
+        {error && (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity 
+              style={styles.retryButton} 
+              onPress={() => setError(null)}
+            >
+              <Text style={styles.retryButtonText}>Dismiss</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         
         {/* Response Type Selection */}
         <View style={styles.section}>
@@ -132,7 +171,9 @@ function ChatScreen() {
           <Text style={styles.infoText}>1. Enter the message you want to respond to</Text>
           <Text style={styles.infoText}>2. Choose your response style (flirty, witty, savage)</Text>
           <Text style={styles.infoText}>3. Get AI-generated perfect replies!</Text>
-          <Text style={styles.infoText}>4. Watch ads to unlock unlimited responses</Text>
+          {Platform.OS !== 'web' && (
+            <Text style={styles.infoText}>4. Watch ads to unlock unlimited responses</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -141,8 +182,32 @@ function ChatScreen() {
 
 // Screenshot Tab Component
 function ScreenshotScreen() {
-  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleImagePicker = async () => {
+    try {
+      setError(null);
+      
+      if (Platform.OS === 'android') {
+        const hasPermissions = await requestPermissions();
+        if (!hasPermissions) {
+          Alert.alert('Permissions Required', 'Please grant camera and storage permissions to use this feature.');
+          return;
+        }
+      }
+
+      const result = await imagePickerService.showImagePickerOptions();
+      if (result) {
+        setSelectedImage(result.uri);
+      }
+    } catch (error: any) {
+      console.error('Image picker error:', error);
+      setError('Failed to select image. Please try again.');
+      Alert.alert('Error', 'Failed to select image. Please try again.');
+    }
+  };
 
   const requestPermissions = async () => {
     if (Platform.OS !== 'android') return true;
@@ -164,24 +229,6 @@ function ScreenshotScreen() {
     }
   };
 
-  const handleImagePicker = async () => {
-    try {
-      const hasPermissions = await requestPermissions();
-      if (!hasPermissions) {
-        Alert.alert('Permissions Required', 'Please grant camera and storage permissions to use this feature.');
-        return;
-      }
-
-      const result = await imagePickerService.showImagePickerOptions();
-      if (result) {
-        setSelectedImage(result.uri);
-      }
-    } catch (error) {
-      console.error('Image picker error:', error);
-      Alert.alert('Error', 'Failed to select image. Please try again.');
-    }
-  };
-
   const handleProcessImage = async () => {
     if (!selectedImage) {
       Alert.alert('Error', 'Please select an image first!');
@@ -189,16 +236,19 @@ function ScreenshotScreen() {
     }
 
     setLoading(true);
+    setError(null);
 
     try {
-      // Check if user needs to watch ad
-      const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
-      if (shouldShowAd) {
-        const adWatched = await adService.showRewardedAd();
-        if (!adWatched) {
-          Alert.alert('Ad Required', 'Please watch the ad to process your image.');
-          setLoading(false);
-          return;
+      // Check if user needs to watch ad (only on mobile)
+      if (Platform.OS !== 'web') {
+        const shouldShowAd = Math.random() > 0.7; // 30% chance to show ad
+        if (shouldShowAd) {
+          const adWatched = await adService.showRewardedAd();
+          if (!adWatched) {
+            Alert.alert('Ad Required', 'Please watch the ad to process your image.');
+            setLoading(false);
+            return;
+          }
         }
       }
 
@@ -224,12 +274,26 @@ function ScreenshotScreen() {
               Alert.alert('Copied!', 'Response copied to clipboard');
             }
           },
+          { 
+            text: 'Retry', 
+            onPress: () => handleProcessImage(),
+            style: 'default'
+          },
           { text: 'OK' }
         ]
       );
     } catch (error: any) {
       console.error('Process image error:', error);
-      Alert.alert('Error', error.message || 'Failed to process image. Please try again.');
+      setError(error.message || 'Failed to process image');
+      
+      Alert.alert(
+        'Error', 
+        error.message || 'Failed to process image. Please try again.',
+        [
+          { text: 'Retry', onPress: () => handleProcessImage() },
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
     } finally {
       setLoading(false);
     }
@@ -240,6 +304,18 @@ function ScreenshotScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Screenshot Analysis</Text>
         <Text style={styles.subtitle}>Upload screenshots for AI analysis</Text>
+        
+        {error && (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity 
+              style={styles.retryButton} 
+              onPress={() => setError(null)}
+            >
+              <Text style={styles.retryButtonText}>Dismiss</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         
         {selectedImage ? (
           <View style={styles.imagePreview}>
@@ -264,7 +340,9 @@ function ScreenshotScreen() {
         ) : (
           <View style={styles.uploadArea}>
             <Text style={styles.uploadIcon}>📱</Text>
-            <Text style={styles.uploadText}>Tap to upload screenshot</Text>
+            <Text style={styles.uploadText}>
+              {Platform.OS === 'web' ? 'Tap to upload image' : 'Tap to upload screenshot'}
+            </Text>
             <TouchableOpacity style={styles.uploadButton} onPress={handleImagePicker}>
               <Text style={styles.buttonText}>Choose Image</Text>
             </TouchableOpacity>
@@ -341,7 +419,7 @@ function HistoryScreen() {
 
 // Account Tab Component
 function AccountScreen() {
-  const [isSignedIn, setIsSignedIn] = React.useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const handleAuth = () => {
     if (isSignedIn) {
@@ -394,8 +472,21 @@ function AccountScreen() {
         <TouchableOpacity style={styles.premiumCard} onPress={handlePremium}>
           <Text style={styles.premiumIcon}>👑</Text>
           <Text style={styles.premiumTitle}>Upgrade to Premium</Text>
-          <Text style={styles.premiumSubtitle}>Unlimited responses • Ad-free • Priority support</Text>
+          <Text style={styles.premiumSubtitle}>
+            Unlimited responses • {Platform.OS !== 'web' ? 'Ad-free • ' : ''}Priority support
+          </Text>
         </TouchableOpacity>
+
+        <View style={styles.platformInfo}>
+          <Text style={styles.platformText}>
+            Platform: {Platform.OS === 'web' ? 'Web' : 'Mobile'}
+          </Text>
+          {Platform.OS === 'web' && (
+            <Text style={styles.platformNote}>
+              Web version has unlimited responses and no ads!
+            </Text>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -403,13 +494,17 @@ function AccountScreen() {
 
 function App(): React.JSX.Element {
   useEffect(() => {
-    // Hide splash screen after app loads
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 2000);
+    // Hide splash screen after app loads (only on native)
+    if (SplashScreen) {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 2000);
+    }
 
-    // Initialize ads service
-    adService.initialize().catch(console.error);
+    // Initialize ads service (only on native)
+    if (Platform.OS !== 'web') {
+      adService.initialize().catch(console.error);
+    }
   }, []);
 
   return (
@@ -449,7 +544,8 @@ function App(): React.JSX.Element {
           <Tab.Screen name="Chat" component={ChatScreen} />
           <Tab.Screen name="History" component={HistoryScreen} />
         </Tab.Navigator>
-        <BannerAdComponent />
+        {/* Only show banner ads on native platforms */}
+        {Platform.OS !== 'web' && <BannerAdComponent />}
       </View>
     </NavigationContainer>
   );
@@ -481,6 +577,31 @@ const styles = StyleSheet.create({
     color: '#718096',
     textAlign: 'center',
     marginBottom: 30,
+  },
+  errorCard: {
+    backgroundColor: '#FED7D7',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FC8181',
+  },
+  errorText: {
+    color: '#C53030',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  retryButton: {
+    backgroundColor: '#E53E3E',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
   },
   section: {
     marginBottom: 24,
@@ -590,6 +711,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4A5568',
     marginBottom: 20,
+    textAlign: 'center',
   },
   uploadButton: {
     backgroundColor: '#9B59B6',
@@ -765,6 +887,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#FFD700',
+    marginBottom: 20,
   },
   premiumIcon: {
     fontSize: 32,
@@ -779,6 +902,23 @@ const styles = StyleSheet.create({
   premiumSubtitle: {
     fontSize: 14,
     color: '#718096',
+    textAlign: 'center',
+  },
+  platformInfo: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  platformText: {
+    fontSize: 14,
+    color: '#4A5568',
+    fontWeight: '600',
+  },
+  platformNote: {
+    fontSize: 12,
+    color: '#38A169',
+    marginTop: 4,
     textAlign: 'center',
   },
   tabBar: {
